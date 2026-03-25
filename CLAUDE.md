@@ -35,6 +35,8 @@ aidsmedstack/
 ├── README.md              # one-paragraph description
 ├── plan-pi-review/
 │   └── SKILL.md           # PI-level research strategy audit
+├── plan-ds-review/
+│   └── SKILL.md           # data pipeline, harmonization & stats audit
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
 └── src/
