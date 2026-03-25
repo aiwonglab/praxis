@@ -1,49 +1,118 @@
-# gstack — AI Engineering Workflow
+# aidsmedstack — Agent Roles
 
-gstack is a collection of SKILL.md files that give AI agents structured roles for
-software development. Each skill is a specialist: CEO reviewer, eng manager,
-designer, QA lead, release engineer, debugger, and more.
+## Active agents
 
-## Available skills
+### research_assistant (default)
 
-Skills live in `.agents/skills/`. Invoke them by name (e.g., `/office-hours`).
+The default agent for all tasks. Helps the PI with data analysis, code writing,
+literature context, and pipeline development. Follows the data discipline and
+confirmation rules in CLAUDE.md.
 
-| Skill | What it does |
-|-------|-------------|
-| `/office-hours` | Start here. Reframes your product idea before you write code. |
-| `/plan-ceo-review` | CEO-level review: find the 10-star product in the request. |
-| `/plan-eng-review` | Lock architecture, data flow, edge cases, and tests. |
-| `/plan-design-review` | Rate each design dimension 0-10, explain what a 10 looks like. |
-| `/design-consultation` | Build a complete design system from scratch. |
-| `/review` | Pre-landing PR review. Finds bugs that pass CI but break in prod. |
-| `/debug` | Systematic root-cause debugging. No fixes without investigation. |
-| `/design-review` | Design audit + fix loop with atomic commits. |
-| `/qa` | Open a real browser, find bugs, fix them, re-verify. |
-| `/qa-only` | Same as /qa but report only — no code changes. |
-| `/ship` | Run tests, review, push, open PR. One command. |
-| `/document-release` | Update all docs to match what you just shipped. |
-| `/retro` | Weekly retro with per-person breakdowns and shipping streaks. |
-| `/browse` | Headless browser — real Chromium, real clicks, ~100ms/command. |
-| `/setup-browser-cookies` | Import cookies from your real browser for authenticated testing. |
-| `/careful` | Warn before destructive commands (rm -rf, DROP TABLE, force-push). |
-| `/freeze` | Lock edits to one directory. Hard block, not just a warning. |
-| `/guard` | Activate both careful + freeze at once. |
-| `/unfreeze` | Remove directory edit restrictions. |
-| `/gstack-upgrade` | Update gstack to the latest version. |
+Capabilities:
+- Write and test Python code in `src/aidsmedstack/`
+- Explore public datasets (MIMIC-IV, eICU, PhysioNet)
+- Build and validate cohort definitions
+- Create analysis pipelines with polars/pandas
+- Review and explain statistical methods
 
-## Build commands
+Constraints:
+- Always confirm cohort definitions and dataset choices before acting
+- Never access institutional data without explicit instruction
+- Never log or display PHI
 
-```bash
-bun install              # install dependencies
-bun test                 # run tests (free, <5s)
-bun run build            # generate docs + compile binaries
-bun run gen:skill-docs   # regenerate SKILL.md files from templates
-bun run skill:check      # health dashboard for all skills
+## Review skills
+
+| Skill | Status | What it does |
+|-------|--------|-------------|
+| `/plan-pi-review` | **Active** | PI-level research strategy audit. Scores 7 dimensions, interactive. |
+| `/plan-ds-review` | **Active** | Data pipeline, harmonization, stats & reproducibility audit. |
+| `/plan-ai-review` | **Active** | Model selection, fairness, explainability, generalizability audit. |
+| `/plan-clinical-review` | **Active** | Bedside validity, safety, actionability, workflow integration audit. |
+
+## Review chain protocol
+
+### Execution order
+
+```
+plan-pi-review → plan-ds-review → plan-ai-review → plan-clinical-review
+"Right question?"  "Right data?"     "Right model?"   "Right at bedside?"
 ```
 
-## Key conventions
+**Sequential within a thread**: PI must pass before DS runs. DS must pass before
+AI runs. Clinical review runs last.
 
-- SKILL.md files are **generated** from `.tmpl` templates. Edit the template, not the output.
-- Run `bun run gen:skill-docs --host codex` to regenerate Codex-specific output.
-- The browse binary provides headless browser access. Use `$B <command>` in skills.
-- Safety skills (careful, freeze, guard) use inline advisory prose — always confirm before destructive operations.
+**Parallel across independent threads**: Threads with no data/outcome dependencies
+can run their review chains concurrently.
+
+### Handoff: structured summary as artifact
+
+Each skill writes a structured summary block at the end. The next skill in the
+chain should read prior summaries for context. Convention: if writing to files,
+use `reviews/{thread-name}-{skill}.md` (e.g., `reviews/hidden-hypoxemia-pi.md`).
+
+### Dependency map for current research threads
+
+```
+Thread 1 (phenotyping) ──→ Thread 2 (prediction)
+     │                         │
+     │  (phenotypes define      │  (prediction targets
+     │   the endotypes)         │   come from phenotypes)
+     │                         │
+Thread 3 (LLM extraction) ──────────→ Thread 4 (multimodal)
+     (independent, can              (needs data infrastructure
+      run in parallel)               from 1-3, runs last)
+```
+
+### Skip rules
+
+- Descriptive studies with standard statistics: may skip plan-ai-review
+- Research-enabling tools (extraction, infrastructure): clinical review uses
+  the "Monday morning" test instead of the 3 AM test
+- If PI review says PAUSE: stop. Resolve the blocker before downstream reviews.
+
+## Future skills
+
+| Skill | Purpose | When to build |
+|-------|---------|---------------|
+| `/plan-program-review` | Multi-project coherence review — do the threads form a fundable program (R01, K-award)? Evaluate narrative arc, dependency sequencing, and portfolio balance. | When preparing a grant application or annual review |
+| `/office-hours` | Research hypothesis brainstorm — pre-PI-review ideation for new threads | When exploring whether a question is worth pursuing |
+
+## Long-term learning: MD-based project memory
+
+Review skills produce structured artifacts. Over time, these accumulate into a
+learning corpus that makes future reviews sharper. Three layers, built iteratively:
+
+### Layer 1 — Review artifacts (MVP, build when first review runs)
+`reviews/{thread}-{skill}.md` — point-in-time structured summaries.
+Accumulate naturally as skills are invoked. Prior summaries are context for
+the next skill in the chain.
+
+### Layer 2 — Decision log (build when first non-obvious decision is made)
+`decisions/` — capture the *why* behind pivots, scope changes, and method choices.
+Written by the PI (or prompted by the assistant) when a non-obvious call is made.
+Format: date, decision, rationale, alternatives considered, what would change the decision.
+
+### Layer 3 — Lessons learned (build after first completed review cycle)
+`lessons/` — project-specific knowledge that should influence future reviews.
+Things discovered during data exploration, modeling, or validation that aren't
+obvious from the code or literature. Feed back into review skills as
+project-specific anti-patterns and probes.
+
+<!-- TODO: plan-program-review should read all three layers to assess
+     multi-project coherence and narrative arc for grants -->
+
+<!-- TODO: Consider whether lessons/ should be auto-prompted after each
+     review cycle: "Did this review surface anything surprising that
+     future reviews should check for?" -->
+
+## Future agents (not yet implemented)
+
+<!-- cohort_agent — Will handle cohort definition and validation.
+     Responsibilities: inclusion/exclusion criteria parsing, temporal windowing,
+     cohort overlap analysis, definition versioning. Will enforce that every
+     cohort definition is testable and reproducible. -->
+
+<!-- extraction_agent — Will handle EHR/LLM extraction pipelines (EHRmonize).
+     Responsibilities: clinical note parsing, structured data extraction,
+     NLP pipeline orchestration, extraction quality metrics. Will integrate
+     with LLM APIs for zero-shot and few-shot clinical NER. -->

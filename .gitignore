@@ -1,18 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# UV
+.python-version
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Type checking
+.pyright/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
 .env
-node_modules/
-browse/dist/
-bin/gstack-global-discover
-.gstack/
-.claude/skills/
-.agents/
-.context/
-.gstack-worktrees/
-/tmp/
-*.log
-bun.lock
-*.bun-build
-.env
-.env.local
 .env.*
 !.env.example
-supabase/.temp/
+
+# Data — NEVER commit data files
+data/
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.arrow
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.sqlite
+*.db
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Output
+output/
+results/
+figures/
