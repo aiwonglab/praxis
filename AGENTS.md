@@ -20,6 +20,91 @@ Constraints:
 - Never access institutional data without explicit instruction
 - Never log or display PHI
 
+## Review skills
+
+| Skill | Status | What it does |
+|-------|--------|-------------|
+| `/plan-pi-review` | **Active** | PI-level research strategy audit. Scores 7 dimensions, interactive. |
+| `/plan-ds-review` | **Active** | Data pipeline, harmonization, stats & reproducibility audit. |
+| `/plan-ai-review` | **Active** | Model selection, fairness, explainability, generalizability audit. |
+| `/plan-clinical-review` | **Active** | Bedside validity, safety, actionability, workflow integration audit. |
+
+## Review chain protocol
+
+### Execution order
+
+```
+plan-pi-review → plan-ds-review → plan-ai-review → plan-clinical-review
+"Right question?"  "Right data?"     "Right model?"   "Right at bedside?"
+```
+
+**Sequential within a thread**: PI must pass before DS runs. DS must pass before
+AI runs. Clinical review runs last.
+
+**Parallel across independent threads**: Threads with no data/outcome dependencies
+can run their review chains concurrently.
+
+### Handoff: structured summary as artifact
+
+Each skill writes a structured summary block at the end. The next skill in the
+chain should read prior summaries for context. Convention: if writing to files,
+use `reviews/{thread-name}-{skill}.md` (e.g., `reviews/hidden-hypoxemia-pi.md`).
+
+### Dependency map for current research threads
+
+```
+Thread 1 (phenotyping) ──→ Thread 2 (prediction)
+     │                         │
+     │  (phenotypes define      │  (prediction targets
+     │   the endotypes)         │   come from phenotypes)
+     │                         │
+Thread 3 (LLM extraction) ──────────→ Thread 4 (multimodal)
+     (independent, can              (needs data infrastructure
+      run in parallel)               from 1-3, runs last)
+```
+
+### Skip rules
+
+- Descriptive studies with standard statistics: may skip plan-ai-review
+- Research-enabling tools (extraction, infrastructure): clinical review uses
+  the "Monday morning" test instead of the 3 AM test
+- If PI review says PAUSE: stop. Resolve the blocker before downstream reviews.
+
+## Future skills
+
+| Skill | Purpose | When to build |
+|-------|---------|---------------|
+| `/plan-program-review` | Multi-project coherence review — do the threads form a fundable program (R01, K-award)? Evaluate narrative arc, dependency sequencing, and portfolio balance. | When preparing a grant application or annual review |
+| `/office-hours` | Research hypothesis brainstorm — pre-PI-review ideation for new threads | When exploring whether a question is worth pursuing |
+
+## Long-term learning: MD-based project memory
+
+Review skills produce structured artifacts. Over time, these accumulate into a
+learning corpus that makes future reviews sharper. Three layers, built iteratively:
+
+### Layer 1 — Review artifacts (MVP, build when first review runs)
+`reviews/{thread}-{skill}.md` — point-in-time structured summaries.
+Accumulate naturally as skills are invoked. Prior summaries are context for
+the next skill in the chain.
+
+### Layer 2 — Decision log (build when first non-obvious decision is made)
+`decisions/` — capture the *why* behind pivots, scope changes, and method choices.
+Written by the PI (or prompted by the assistant) when a non-obvious call is made.
+Format: date, decision, rationale, alternatives considered, what would change the decision.
+
+### Layer 3 — Lessons learned (build after first completed review cycle)
+`lessons/` — project-specific knowledge that should influence future reviews.
+Things discovered during data exploration, modeling, or validation that aren't
+obvious from the code or literature. Feed back into review skills as
+project-specific anti-patterns and probes.
+
+<!-- TODO: plan-program-review should read all three layers to assess
+     multi-project coherence and narrative arc for grants -->
+
+<!-- TODO: Consider whether lessons/ should be auto-prompted after each
+     review cycle: "Did this review surface anything surprising that
+     future reviews should check for?" -->
+
 ## Future agents (not yet implemented)
 
 <!-- cohort_agent — Will handle cohort definition and validation.
