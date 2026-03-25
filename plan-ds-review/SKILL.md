@@ -91,10 +91,19 @@ For **institutional data**:
 - Is this a direct extract, a warehouse view, or a FHIR export?
 - Are you working with the raw data model or an institutional CDM?
 
+For **NLP/extraction tasks** (gold standard design):
+- Is there a human-annotated reference set? How large? (≥100 documents for pilot, ≥500 for publication)
+- Who designed the annotation schema? Was it validated by a domain expert (clinician)?
+- Who annotates? (clinicians, trained abstractors, the PI alone — each has tradeoffs)
+- How many annotators per document? (≥2 required for inter-rater reliability)
+- Adjudication process: how are disagreements resolved?
+- Is the reference set stratified by difficulty? (straightforward reports, ambiguous findings, negated mentions)
+
 Anti-patterns:
 - Using derived tables without understanding what they derive from
 - Assuming column names are self-documenting ("temperature" — oral? rectal? axillary?)
 - Not checking the version/release of the dataset
+- NLP project with no annotation schema or PI-only annotation with no reliability check
 
 ---
 
@@ -224,12 +233,26 @@ Evaluate:
 | **Collider** | Conditioning on a variable affected by both exposure and outcome | Draw a DAG. Seriously. |
 | **Look-ahead** | Using future data as features (lab result charted after event) | Verify all feature timestamps precede index + gap |
 
+**Derived outcomes — when the prediction target is computed, not observed:**
+
+Some outcomes are not directly recorded in the EHR but constructed from other
+variables (e.g., hidden hypoxemia = SaO2 < 88% when SpO2 ≥ 92%). These require:
+- Explicit documentation of the derivation formula and all threshold choices
+- Sensitivity analysis across plausible threshold ranges (does the cohort change drastically?)
+- Temporal pairing logic documented (e.g., SpO2 and SaO2 must be within N minutes)
+- The derivation must be FROZEN before modeling begins — do not tune thresholds
+  to improve model performance
+- Validate against clinical face validity: does the derived rate match published
+  prevalence estimates?
+
 Anti-patterns:
 - Cohort definition uses a variable that requires the outcome period to compute
 - "ICU patients" without defining which ICU stay (first? last? longest?)
 - No gap period between feature window and prediction target
 - Exclusion criteria that preferentially remove sicker or healthier patients
 - Treating each ICU stay as independent when patients have multiple stays
+- Derived outcome thresholds chosen post-hoc to maximize model performance
+- Temporal pairing logic undocumented or inconsistent across analyses
 
 ---
 
@@ -275,6 +298,11 @@ Anti-patterns:
 ### Dimension 6: Statistical Validity (0-10)
 
 Are the statistical methods appropriate, correctly applied, and honestly reported?
+
+**Scope boundary**: This dimension covers statistical METHODOLOGY — right test,
+correct application, honest reporting. For model-specific METRIC SELECTION (which
+metrics for which task, decision curve analysis, baseline comparison), see
+plan-ai-review Dim 3.
 
 Evaluate:
 - Are the right tests used for the data types? (parametric vs non-parametric)

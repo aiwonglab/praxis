@@ -107,10 +107,17 @@ For **LLM extraction**:
 - Is the LLM deterministic at inference? (temperature, seed, version pinning)
 - Prompt sensitivity: how much does output change with minor prompt variations?
 - What's the fallback when the LLM fails or hallucinates?
+- **Structured output**: What format is expected? (JSON, key-value, table)
+  How is schema compliance enforced? (JSON mode, function calling, post-parse validation)
+  What happens on malformed output? (retry, fallback, flag for human review)
+  Partial extraction: if the LLM extracts 4 of 6 fields, is the partial result usable?
 
 For **contrastive/representation learning**:
 - What is the pretext task? Is it clinically motivated?
 - What are the positive/negative pair definitions? Are they sound?
+- **Temporal validity of pairs**: Are paired modalities from the same clinical window?
+  An EKG from admission and an echo from day 3 are NOT the same cardiac state.
+  How is temporal proximity defined and enforced? What's the maximum allowed gap?
 - How will the learned representation be evaluated? (linear probe, downstream task, nearest-neighbor)
 - Modality dropout: what happens when one modality is missing at inference?
 

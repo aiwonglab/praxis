@@ -45,7 +45,9 @@ to the MICU and wonders whether the patient is truly oxygenating adequately" is.
 
 ## Step 1 — The 3 AM test
 
-Before any dimensional scoring, apply this filter:
+Before any dimensional scoring, apply the appropriate filter:
+
+**For bedside tools (prediction, alerting, decision support):**
 
 > It is 3 AM. The ICU nurse calls the overnight resident because this tool has
 > fired / this result is available / this phenotype has been assigned. **What does
@@ -55,7 +57,18 @@ If the answer is "nothing," "check on the patient" (they would do this anyway),
 or "I'm not sure" — the project has an actionability problem that must be resolved
 before other dimensions matter.
 
-State the 3 AM scenario and the expected clinical action. Confirm with the user.
+**For research-enabling tools (phenotyping, extraction, infrastructure):**
+
+> A researcher opens the output of this tool at their desk on Monday morning.
+> **What analysis can they now do that they couldn't do before — or couldn't do
+> at this scale?**
+
+If the answer is "nothing new" or "same thing but slightly faster" — the project
+has a value problem. Research-enabling tools don't need to pass the bedside 3 AM
+test, but they must clearly unlock work that was previously infeasible.
+
+State the scenario (bedside or research) and the expected action. Confirm with
+the user.
 
 ---
 
@@ -148,12 +161,20 @@ Evaluate:
 - Hidden hypoxemia: SaO2 < X when SpO2 ≥ Y? What thresholds? What temporal pairing logic?
   This is a derived outcome that depends heavily on operational choices.
 
+**For NLP/extraction tasks** — the "outcome" IS the extraction:
+- The validity ladder above doesn't directly apply. Instead score based on:
+  Are the extracted fields clinically defined? (not "finding" but "PE location:
+  segmental/subsegmental/saddle, laterality, acute/chronic")
+  Does the extraction schema match a recognized clinical framework or scoring system?
+  Could two clinicians reading the same note agree on what should be extracted?
+
 Anti-patterns:
 - Using ICU LOS as an outcome when it's confounded by bed availability and discharge practices
 - Binary outcome from a continuous variable without justifying the threshold
 - Outcome requires chart review but no inter-rater reliability plan
 - Outcome ascertainment uses data from after the observation window
 - "Sepsis" defined by billing code (known to be inaccurate) vs clinical criteria (Sepsis-3)
+- Extraction schema designed by engineers without clinician input on what fields matter
 
 ---
 
@@ -378,7 +399,7 @@ After scoring, synthesize:
 
 | Verdict | Meaning | Criteria |
 |---------|---------|----------|
-| **VALID** | Clinically sound. Makes sense at the bedside. | All dimensions ≥ 6, 3 AM test passes |
+| **VALID** | Clinically sound. Makes sense at the bedside (or clearly enables research that will). | All dimensions ≥ 6, 3 AM test passes |
 | **REFINE** | Core idea is sound, but actionability or safety needs work. | Actionability or safety < 6, fixable |
 | **REFRAME** | The clinical question needs rethinking. | Face validity ≤ 4, or 3 AM test fails |
 | **PREMATURE** | The clinical pathway isn't clear enough to evaluate. | > 3 dimensions scored ≤ 3 |
