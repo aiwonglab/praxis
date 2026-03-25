@@ -2,7 +2,7 @@
 name = "aidsmedstack"
 version = "0.1.0"
 description = "Medical AI and data science research stack for critical care and pulmonary medicine"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = "MIT"
 
 [build-system]
@@ -11,11 +11,11 @@ build-backend = "hatchling.backends"
 
 [tool.ruff]
 line-length = 88
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pyright]
-pythonVersion = "3.11"
+pythonVersion = "3.13"
 typeCheckingMode = "basic"

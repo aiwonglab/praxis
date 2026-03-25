@@ -17,7 +17,7 @@ uv run pyright               # type checking
 
 ## Tech stack
 
-- **Language**: Python 3.11+
+- **Language**: Python 3.13+
 - **Package manager**: UV only. Never pip.
 - **Core libraries** (when added): polars, pandas, pyarrow, scikit-learn, delta-lake
 - **Testing**: pytest + anyio for async
@@ -29,10 +29,12 @@ uv run pyright               # type checking
 ```
 aidsmedstack/
 ├── CLAUDE.md              # this file — meta-instructions for Claude Code
-├── agents.md              # agent roles and future expansion points
+├── agents.md              # agent roles, review skills, future expansion
 ├── .gitignore             # Python + data science ignores
 ├── pyproject.toml         # project metadata
 ├── README.md              # one-paragraph description
+├── plan-pi-review/
+│   └── SKILL.md           # PI-level research strategy audit
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
 └── src/
