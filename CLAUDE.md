@@ -37,6 +37,10 @@ aidsmedstack/
 │   └── SKILL.md           # PI-level research strategy audit
 ├── plan-ds-review/
 │   └── SKILL.md           # data pipeline, harmonization & stats audit
+├── plan-ai-review/
+│   └── SKILL.md           # model selection, fairness & explainability audit
+├── plan-clinical-review/
+│   └── SKILL.md           # bedside validity, safety & actionability audit
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
 └── src/
