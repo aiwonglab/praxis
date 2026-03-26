@@ -11,9 +11,6 @@ collaborator. It's meant to make your time with them more effective.
 > This is not a finished product. It's a practice — opinionated, reproducible,
 > and designed to compound across studies.
 
-**Note:** The repository directory is still named `aidsmedstack`. It will be renamed
-once git remotes are updated.
-
 ## Built on
 
 Praxis is forked from [gstack](https://github.com/garrytan/gstack) by Garry Tan.

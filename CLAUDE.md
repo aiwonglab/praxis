@@ -30,7 +30,7 @@ uv run pyright               # type checking
 ## Project structure
 
 ```
-praxis/                    # directory will be renamed from aidsmedstack in a future step
+praxis/
 ├── CLAUDE.md              # this file — meta-instructions for Claude Code
 ├── AGENTS.md              # agent roles, review skills, future expansion
 ├── ETHOS.md               # 4 ethos + 3 principles — shared decision framework
@@ -48,7 +48,7 @@ praxis/                    # directory will be renamed from aidsmedstack in a fu
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
 └── src/
-    └── aidsmedstack/      # package dir — will be renamed to praxis/
+    └── praxis/
         └── __init__.py    # package root
 ```
 
