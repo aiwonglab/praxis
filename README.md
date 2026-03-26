@@ -1,6 +1,6 @@
 # praxis
 
-A research scaffold for trustworthy clinical AI. Built by a clinician-researcher,
+A research scaffold for clinical AI and data science. Built by a clinician-researcher,
 for clinician-researchers — whether you write Python daily or are just getting started.
 
 Praxis is early. It's a tested starting point for the repetitive parts of clinical

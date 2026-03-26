@@ -1,7 +1,7 @@
 [project]
 name = "praxis"
 version = "0.1.0"
-description = "A research scaffold for trustworthy clinical AI"
+description = "A research scaffold for clinical AI and data science"
 requires-python = ">=3.13"
 license = "MIT"
 
