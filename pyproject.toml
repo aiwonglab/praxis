@@ -1,7 +1,7 @@
 [project]
-name = "aidsmedstack"
+name = "praxis"
 version = "0.1.0"
-description = "Medical AI and data science research stack for critical care and pulmonary medicine"
+description = "A research scaffold for trustworthy clinical AI"
 requires-python = ">=3.13"
 license = "MIT"
 

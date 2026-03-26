@@ -1,4 +1,4 @@
-# aidsmedstack — Agent Roles
+# praxis — Agent Roles
 
 ## Active agents
 
@@ -9,7 +9,7 @@ literature context, and pipeline development. Follows the data discipline and
 confirmation rules in CLAUDE.md.
 
 Capabilities:
-- Write and test Python code in `src/aidsmedstack/`
+- Write and test Python code in `src/praxis/`
 - Explore public datasets (MIMIC-IV, eICU, PhysioNet)
 - Build and validate cohort definitions
 - Create analysis pipelines with polars/pandas
