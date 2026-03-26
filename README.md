@@ -38,17 +38,17 @@ This is early. Here's what exists and what's coming:
 | Component | What it does |
 |-----------|-------------|
 | **Research stack** | Python environment with dependency management, type checking, linting, and testing built in. Ready for polars, pandas, scikit-learn. |
-| **`/plan-pi-review`** | PI-level research strategy audit. Scores your plan across 7 dimensions — question clarity, clinical significance, data feasibility, methods, scope, risk, collaboration readiness. Interactive: walks through each dimension with you before giving a GO / ITERATE / PIVOT / PAUSE verdict. |
-| **Data discipline** | Public data first (MIMIC-IV, eICU, PhysioNet). No hardcoded paths. No PHI in logs. Reproducibility enforced by convention and tooling. |
-| **Development workflow** | Inherited from [gstack](https://github.com/garrytan/gstack) — structured sprint skills for code review, QA, shipping, debugging, and retrospectives. |
+| **`/plan-pi-review`** | PI-level research strategy audit. Scores 7 dimensions — question clarity, clinical significance, data feasibility, methods, scope, risk, collaboration readiness. GO / ITERATE / PIVOT / PAUSE verdict. |
+| **`/plan-ds-review`** | Data pipeline and statistical rigor audit. Scores 7 dimensions — data understanding, ingestion, harmonization, cohort definition, feature engineering, statistical validity, reproducibility. Dataset-specific probes for MIMIC-IV, eICU, waveforms, DICOM. SOUND / FIX / REDESIGN / BLOCKED verdict. |
+| **`/plan-ai-review`** | Model and fairness audit. Evaluates model selection, training methodology, evaluation rigor, fairness and bias, explainability, deployment readiness, and monitoring. |
+| **`/plan-clinical-review`** | Bedside validity and safety audit. Assesses clinical actionability, safety implications, workflow integration, patient population fit, and regulatory considerations. |
+| **Data discipline** | Public data first when possible (MIMIC-IV, eICU, PhysioNet). No hardcoded paths. No PHI in logs. Reproducibility enforced by convention and tooling. |
+| **Development workflow** | Inherited from [gstack](https://github.com/garrytan/gstack) — structured sprint skills for code review, QA, shipping, debugging, and retrospectives. [Install gstack](https://github.com/garrytan/gstack#install--30-seconds) to get the full set. |
 
 ### Planned
 
 | Component | What it will do |
 |-----------|----------------|
-| **`/plan-ds-review`** | Data pipeline and statistical rigor review |
-| **`/plan-ai-review`** | Model selection, fairness, explainability review |
-| **`/plan-clinical-review`** | Bedside validity, safety, actionability review |
 | **Cohort builder** | Reusable cohort definitions — inclusion/exclusion parsing, temporal windowing, version tracking, and tests that travel with the definition |
 | **Extraction pipelines** | Structured data from clinical notes — clinical NER, LLM-based extraction, rule-based fallbacks |
 
@@ -103,7 +103,7 @@ The pattern: start on public data, test thoroughly, then adapt for your institut
 
 ## Philosophy
 
-**Public data first.** Prove everything on MIMIC-IV, eICU, or PhysioNet before touching institutional data. This isn't just convenience — it's reproducibility. If your pipeline only works behind your IRB, no one can verify or extend it.
+**Public data first — when it exists.** Prove on MIMIC-IV, eICU, or PhysioNet when a public dataset fits your question. When it doesn't, build your pipeline so that the logic is testable and portable even if the data can't be shared. Reproducibility isn't just about open data — it's about code that someone else can follow.
 
 **Test before you trust.** Cohort logic gets tests before implementation. Every bug fix gets a regression test. Clinical data science is high-stakes — "it worked when I ran it" is not a standard.
 
@@ -111,9 +111,26 @@ The pattern: start on public data, test thoroughly, then adapt for your institut
 
 **Make your team's time count.** The goal is to walk into your collaborator meeting with a clean, tested, reproducible starting point — not a finished product, but something real enough to build on together. Your biostatistician shouldn't have to debug your data cleaning. Your ML colleague shouldn't have to guess what your cohort definition means.
 
+## Scope and direction
+
+**Starting point: critical care.** ICU data touches every organ system, every data modality, and some of the hardest clinical decision-making in medicine. If the scaffold works here — where the data is messy, the stakes are high, and the clinical context changes by the hour — it generalizes well.
+
+**Data modalities we're working toward:**
+
+- **Structured EHR** — labs, vitals, medications, flowsheets, orders. The foundation.
+- **Clinical text** — radiology reports, discharge summaries, progress notes, operative notes. Where the clinical reasoning lives.
+- **Waveforms** — ventilator data, continuous telemetry, physiologic monitoring. High-frequency, high-noise, high-value.
+- **Imaging** — chest X-rays, CT scans, ultrasound. Increasingly available in research datasets.
+
+Not all of these are supported yet. The structured EHR and clinical text paths are active. Waveform and imaging support are on the roadmap — the architecture is designed to accommodate them without rewriting what's already built.
+
+**Specialty expansion:** Critical care first, then pulmonary medicine, then broader. The review skills and cohort patterns are designed to be adaptable — fork `/plan-pi-review` for your specialty, swap in your cohort definitions, and the rest of the scaffold still works.
+
+**Built for clinical studies and trials** — not just retrospective analysis. The workflow supports the full arc from question formulation through data extraction, analysis, validation, and the reproducibility standards that reviewers and collaborators expect.
+
 ## Upstream
 
-aidsmedstack builds on [gstack](https://github.com/garrytan/gstack). All gstack development workflow skills are available here. To pull upstream improvements:
+aidsmedstack builds on [gstack](https://github.com/garrytan/gstack) for its development workflow (code review, QA, shipping, retrospectives). The clinical research skills (`/plan-pi-review`, `/plan-ds-review`, `/plan-ai-review`, `/plan-clinical-review`) are original to this project. To pull upstream gstack improvements:
 
 ```bash
 git fetch upstream

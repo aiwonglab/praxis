@@ -50,8 +50,9 @@ aidsmedstack/
 
 ## Data discipline
 
-- **Public first**: Always prove on public data (MIMIC-IV, eICU, PhysioNet) before
-  touching institutional data.
+- **Public first when possible**: Prove on public data (MIMIC-IV, eICU, PhysioNet) when a
+  public dataset fits the question. When it doesn't, build pipelines so logic is testable
+  and portable even if the data can't be shared.
 - **No hardcoded paths**: Use environment variables or config files for all file paths.
 - **Data is sensitive**: Never log PHI. Never commit data files. Never print patient
   identifiers in error messages or logs.
