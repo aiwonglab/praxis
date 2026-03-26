@@ -1,10 +1,10 @@
-# aidsmedstack development
+# praxis development
 
 ## Identity
 
-You are helping a physician-researcher (PI) build trustworthy clinical AI and
-data science tools for critical care and pulmonary medicine. Collaborators are
-co-investigators, not employees. This is a research scaffold, not a product.
+You are helping a physician-researcher build PRAXIS — a methodology and scaffold
+for trustworthy clinical AI. This is not a web app. It is a research practice.
+The user is a PI. Collaborators are co-investigators. There is no CEO.
 
 Read `ETHOS.md` for foundational principles. Apply them when making decisions
 about definitions, data pipelines, validation, and code architecture.
@@ -30,12 +30,13 @@ uv run pyright               # type checking
 ## Project structure
 
 ```
-aidsmedstack/
+praxis/                    # directory will be renamed from aidsmedstack in a future step
 ├── CLAUDE.md              # this file — meta-instructions for Claude Code
-├── agents.md              # agent roles, review skills, future expansion
+├── AGENTS.md              # agent roles, review skills, future expansion
+├── ETHOS.md               # 4 ethos + 3 principles — shared decision framework
 ├── .gitignore             # Python + data science ignores
 ├── pyproject.toml         # project metadata
-├── README.md              # one-paragraph description
+├── README.md              # project overview
 ├── plan-pi-review/
 │   └── SKILL.md           # PI-level research strategy audit
 ├── plan-ds-review/
@@ -47,7 +48,7 @@ aidsmedstack/
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
 └── src/
-    └── aidsmedstack/
+    └── aidsmedstack/      # package dir — will be renamed to praxis/
         └── __init__.py    # package root
 ```
 
@@ -85,9 +86,11 @@ Three layers of knowledge: tried-and-true (use it), new-and-popular (scrutinize 
 first-principles (prize it above all). The best research code avoids reinventing
 wheels while making original observations about the problem.
 
-## AskUserQuestion — always confirm before acting on
+## Interaction discipline
 
-Before executing any task that involves:
+### When to ask
+
+Always confirm before acting on:
 
 - **Cohort definition choices** (inclusion/exclusion criteria, time windows)
 - **Dataset selection** (MIMIC-IV vs eICU vs institutional)
@@ -95,8 +98,26 @@ Before executing any task that involves:
 - **Package installation** (always ask before `uv add`)
 - **Schema changes** to any data pipeline
 
-...ask the user to confirm rather than assuming. Researchers need interactive
-clarification before acting on ambiguous tasks.
+Researchers need interactive clarification before acting on ambiguous tasks.
+
+### How to ask
+
+- **Use AskUserQuestion for decisions** — don't bury them in long prose. If a
+  response contains a decision point, it should be an AskUserQuestion, not a
+  paragraph that ends with "what do you think?"
+- **3 or fewer decisions per interaction.** If you have more, batch into
+  sequential rounds. Don't overwhelm.
+- **Each question should be self-contained.** The user shouldn't need to re-read
+  the preceding output to answer. Put the context in the question itself.
+- **Lead with the decision after long analysis.** If you've written a long
+  exploration, put the AskUserQuestion first, or immediately after the summary —
+  not buried at the bottom.
+
+### When NOT to ask
+
+- Low-stakes, reversible choices — just do them and mention what you chose
+- Decisions the user already authorized in this session
+- Things covered by CLAUDE.md rules or ETHOS.md principles — follow the rule
 
 ## Package management
 

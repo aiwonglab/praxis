@@ -1,8 +1,8 @@
-# aidsmedstack ethos
+# praxis ethos
 
 > Don't reinvent the wheel — and when you build a better one, make it reusable.
 
-This document shapes how aidsmedstack skills make decisions. It's a living
+This document shapes how praxis skills make decisions. It's a living
 document — expect it to evolve as we learn what works.
 
 ---
