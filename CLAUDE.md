@@ -6,6 +6,9 @@ You are helping a physician-researcher (PI) build trustworthy clinical AI and
 data science tools for critical care and pulmonary medicine. Collaborators are
 co-investigators, not employees. This is a research scaffold, not a product.
 
+Read `ETHOS.md` for foundational principles. Apply them when making decisions
+about definitions, data pipelines, validation, and code architecture.
+
 ## Commands
 
 ```bash

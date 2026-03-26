@@ -101,15 +101,16 @@ aidsmedstack is designed to be forked and adapted:
 
 The pattern: start on public data, test thoroughly, then adapt for your institution. PRs welcome — especially if they make the scaffold more general without adding complexity.
 
-## Philosophy
+## Principles
 
-**Public data first — when it exists.** Prove on MIMIC-IV, eICU, or PhysioNet when a public dataset fits your question. When it doesn't, build your pipeline so that the logic is testable and portable even if the data can't be shared. Reproducibility isn't just about open data — it's about code that someone else can follow.
+> Don't reinvent the wheel — and when you build a better one, make it reusable.
 
-**Test before you trust.** Cohort logic gets tests before implementation. Every bug fix gets a regression test. Clinical data science is high-stakes — "it worked when I ran it" is not a standard.
+Our ethos and principles are in [ETHOS.md](ETHOS.md). The short version:
 
-**Iterate, don't over-engineer.** Start with the minimum viable analysis. Get a result. Then extend. Three similar functions are better than a premature abstraction that doesn't fit the next dataset.
-
-**Make your team's time count.** The goal is to walk into your collaborator meeting with a clean, tested, reproducible starting point — not a finished product, but something real enough to build on together. Your biostatistician shouldn't have to debug your data cleaning. Your ML colleague shouldn't have to guess what your cohort definition means.
+- **Novel methods on reproducible foundations** — boring foundations, clear novelty
+- **Don't reinvent the wheel** — consensus definitions, existing phenotypes, published methods first
+- **Bring cleaner starting points** — to collaborators, to the next study, to the field
+- **Compound internally, share when ready** — fast iteration within studies, share the artifact when it's ready
 
 ## Scope and direction
 
