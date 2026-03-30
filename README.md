@@ -11,6 +11,18 @@ collaborator. It's meant to make your time with them more effective.
 > This is not a finished product. It's a practice — opinionated, reproducible,
 > and designed to compound across studies.
 
+## Install
+
+**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/), [uv](https://docs.astral.sh/uv/)
+
+Open Claude Code and paste this:
+
+> Install praxis: run **`git clone https://github.com/aiwonglab/praxis.git ~/.claude/skills/praxis && cd ~/.claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to CLAUDE.md listing the available skills: /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review, and note to see ETHOS.md for foundational principles.
+
+To add to a specific project so collaborators get it:
+
+> Add praxis to this project: run **`cp -Rf ~/.claude/skills/praxis .claude/skills/praxis && rm -rf .claude/skills/praxis/.git && cd .claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to this project's CLAUDE.md listing the available skills.
+
 ## Built on
 
 Praxis is forked from [gstack](https://github.com/garrytan/gstack) by Garry Tan.
