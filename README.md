@@ -1,6 +1,6 @@
 # praxis
 
-A research scaffold for trustworthy clinical AI. Built by a clinician-researcher,
+A research scaffold for clinical AI and data science. Built by a clinician-researcher,
 for clinician-researchers — whether you write Python daily or are just getting started.
 
 Praxis is early. It's a tested starting point for the repetitive parts of clinical
@@ -10,6 +10,64 @@ collaborator. It's meant to make your time with them more effective.
 
 > This is not a finished product. It's a practice — opinionated, reproducible,
 > and designed to compound across studies.
+
+## Install — 30 seconds
+
+**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/), [uv](https://docs.astral.sh/uv/)
+
+### Step 1: Install on your machine
+
+Open Claude Code and paste this. Claude does the rest.
+
+> Install praxis: run **`git clone https://github.com/aiwonglab/praxis.git ~/.claude/skills/praxis && cd ~/.claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to CLAUDE.md that lists the available skills: /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review, and notes to read ETHOS.md for foundational principles. Then ask the user if they also want to add praxis to the current project so collaborators get it.
+
+### Step 2: Add to your repo so collaborators get it (optional)
+
+> Add praxis to this project: run **`cp -Rf ~/.claude/skills/praxis .claude/skills/praxis && rm -rf .claude/skills/praxis/.git && cd .claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to this project's CLAUDE.md that lists the available skills: /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review, and tells Claude that if praxis skills aren't working, run `cd .claude/skills/praxis && bash scripts/setup.sh` to re-link them.
+
+Real files get committed to your repo (not a submodule), so `git clone` just works. Everything lives inside `.claude/`. Nothing touches your PATH or runs in the background.
+
+## See it work
+
+```
+You:    I want to build a sepsis phenotyping model using MIMIC-IV.
+You:    /plan-pi-review
+
+Claude: [Definition audit] You said "sepsis" — which definition?
+        Sepsis-3 (organ dysfunction + suspected infection)?
+        ICD-9/10 codes? A custom clinical phenotype?
+        [scores 7 dimensions — question clarity, clinical significance,
+         data feasibility, methods, scope, risk, collaboration readiness]
+        [flags: no external validation plan, cohort definition too broad,
+         unclear what "phenotyping" means here vs prediction]
+
+        VERDICT: ITERATE — lock the sepsis definition (Sepsis-3),
+        narrow to a specific ICU population, add an eICU validation
+        arm before building the model.
+
+You:    /plan-ds-review
+
+Claude: [checks your data pipeline]
+        [flags: chartevents timestamps arrive after your prediction
+         window for 23% of cases — potential look-ahead bias]
+        [checks MIMIC-IV → eICU harmonization: different vasopressor
+         naming, different lab unit conventions]
+
+        VERDICT: FIX — resolve the timestamp leakage before modeling.
+        Harmonization layer needed for cross-dataset validation.
+
+You:    /plan-ai-review
+
+Claude: [reviews model choice, fairness across demographics,
+         calibration plan, explainability approach]
+
+You:    /plan-clinical-review
+
+Claude: "So what? What do I do differently at 3 AM because this exists?"
+        [assesses whether the phenotypes map to actionable clinical decisions]
+```
+
+Four reviews, each catching problems the others miss. The PI review catches scope and definition problems. The DS review catches data leakage. The AI review catches model and fairness issues. The clinical review catches "technically correct but clinically useless."
 
 ## Built on
 
