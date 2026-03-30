@@ -9,7 +9,7 @@
 #   cp -Rf ~/.claude/skills/praxis .claude/skills/praxis
 #   cd .claude/skills/praxis && bash scripts/setup.sh
 #
-set -e
+set -euo pipefail
 
 PRAXIS_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SKILLS_DIR="$(dirname "$PRAXIS_DIR")"
@@ -19,6 +19,7 @@ echo "praxis setup"
 echo "  source: $PRAXIS_DIR"
 
 # ─── 1. Link skill directories into the skills parent ───────────────
+shopt -s nullglob
 if [ "$SKILLS_BASENAME" = "skills" ]; then
   linked=()
   for skill_dir in "$PRAXIS_DIR"/plan-*/; do
