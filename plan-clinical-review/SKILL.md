@@ -33,7 +33,16 @@ reasoning.
 
 ---
 
-## Step 0 — Read the plan and clinical context
+## Step 0 — Update check + Read the plan and clinical context
+
+Before starting, check for updates:
+```bash
+_UPD=$(~/.claude/skills/praxis/bin/praxis-update-check 2>/dev/null || .claude/skills/praxis/bin/praxis-update-check 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+```
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the praxis-upgrade SKILL.md
+and follow the "Inline upgrade flow". If `JUST_UPGRADED <from> <to>`: tell user
+"Running praxis v{to} (just updated!)" and continue.
 
 Read any plan files. If insufficient, ask the user:
 
@@ -87,7 +96,23 @@ Walk through each dimension **one at a time, interactively**. For each:
 3. Describe what a 10 looks like for THIS specific project
 4. Name one concrete action that would raise the score
 
-Ask the user if they want to discuss before moving on.
+### Surfacing decisions (applies to all dimensions)
+
+Follow the interaction discipline in CLAUDE.md. Specifically:
+
+- **If a dimension surfaces a clinical design fork** (e.g., outcome definition
+  choice, harm asymmetry trade-off, workflow integration approach, actionability
+  framing), use `AskUserQuestion` — don't bury it in the rationale.
+- **Limit to 2-3 decisions per dimension.** Pick the most consequential forks.
+  Save the rest for the clinical integration map in Step 3.
+- **Each question must be self-contained.** Include the clinical scenario, the
+  alternatives, and what changes downstream, so the user can answer without
+  re-reading.
+- **Lead with the decision.** If analysis reveals a fork, put the AskUserQuestion
+  immediately after the score — not at the bottom of a long discussion.
+- **Don't ask for permission to continue.** Just proceed to the next dimension.
+  AskUserQuestion is for forks that change what you'd score or recommend, not
+  for "Ready for Dimension 4?"
 
 ---
 

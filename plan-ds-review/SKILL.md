@@ -27,7 +27,16 @@ data and methods can answer it correctly.
 
 ---
 
-## Step 0 — Read the plan and data context
+## Step 0 — Update check + Read the plan and data context
+
+Before starting, check for updates:
+```bash
+_UPD=$(~/.claude/skills/praxis/bin/praxis-update-check 2>/dev/null || .claude/skills/praxis/bin/praxis-update-check 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+```
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the praxis-upgrade SKILL.md
+and follow the "Inline upgrade flow". If `JUST_UPGRADED <from> <to>`: tell user
+"Running praxis v{to} (just updated!)" and continue.
 
 Read any plan files, data dictionaries, or pipeline descriptions in the working
 directory. If insufficient, ask the user:
@@ -65,7 +74,23 @@ Walk through each dimension **one at a time, interactively**. For each:
 3. Describe what a 10 looks like for THIS specific project
 4. Name one concrete action that would raise the score
 
-Ask the user if they want to discuss before moving on.
+### Surfacing decisions (applies to all dimensions)
+
+Follow the interaction discipline in CLAUDE.md. Specifically:
+
+- **If a dimension surfaces a methodological fork** (e.g., which derived table to
+  use, how to handle a temporal alignment issue, whether to filter by specimen
+  type), use `AskUserQuestion` — don't bury it in prose.
+- **Limit to 2-3 decisions per dimension.** Pick the most consequential forks.
+  Save lower-stakes items for the data flow diagram in Step 3.
+- **Each question must be self-contained.** Include enough context (table names,
+  the specific trade-off, what changes downstream) that the user can answer
+  without re-reading the full dimension.
+- **Lead with the decision.** If you've written analysis that reveals a fork,
+  put the AskUserQuestion immediately after the score — not at the bottom.
+- **Don't ask for permission to continue.** Just proceed to the next dimension
+  unless the user stops you. AskUserQuestion is for forks that change what you'd
+  score or recommend downstream, not for "Ready for Dimension 4?"
 
 ---
 
@@ -405,6 +430,12 @@ For each arrow, identify:
 1. What could go wrong at this step?
 2. What validation confirms this step is correct?
 3. Is this step implemented and tested, or still planned?
+
+If the data flow diagram reveals implementation forks (e.g., which source table
+to use, whether to filter by specimen type vs use a derived table, how to handle
+a temporal alignment gap), surface the top 2-3 via `AskUserQuestion`. Include
+the concrete alternatives and their downstream implications (cohort size, data
+quality, false positive rates).
 
 ## Step 4 — Verdict
 
