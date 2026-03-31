@@ -168,8 +168,13 @@ Produce a definition inventory table:
 | ... | ... | ... | ... | ... |
 ```
 
-Confirm this table with the user before proceeding to dimensional scoring.
 **Any concept without a stated definition is a gap that must be resolved.**
+
+Use `AskUserQuestion` to confirm the definition inventory table before proceeding
+to dimensional scoring. If any concept has competing definitions or a proposed
+deviation from consensus, surface each as a separate AskUserQuestion — these are
+methodological forks, not commentary. Limit to 3 definition decisions per round;
+if there are more, batch into sequential rounds.
 
 ---
 
@@ -182,8 +187,25 @@ Walk through each dimension **one at a time, interactively**. For each dimension
 3. Describe what a 10 looks like for THIS specific project
 4. Name one concrete action that would raise the score
 
-**Ask the user** if they want to discuss or adjust before moving to the next
-dimension. Do NOT output all seven scores at once.
+Do NOT output all seven scores at once.
+
+### Surfacing decisions (applies to all dimensions)
+
+Follow the interaction discipline in CLAUDE.md. Specifically:
+
+- **If a dimension surfaces a methodological fork** (e.g., two valid approaches
+  to defining a cohort, two reasonable data sources, a scope trade-off), use
+  `AskUserQuestion` — don't bury it in the rationale paragraph.
+- **Limit to 2-3 decisions per dimension.** If scoring surfaces more, pick the
+  most consequential ones now and save the rest for Step 3.
+- **Each question must be self-contained.** Include enough context that the user
+  can answer without re-reading the full dimension writeup.
+- **Lead with the decision.** If the dimension has both analysis and a decision,
+  put the AskUserQuestion immediately after the score — not at the bottom of a
+  long risk discussion.
+- **Don't ask for permission to continue.** "Ready for Dimension 4?" is not a
+  decision. Just proceed unless the user stops you. The AskUserQuestion is for
+  forks that change what you'd score or recommend downstream.
 
 ---
 

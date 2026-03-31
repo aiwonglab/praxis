@@ -69,7 +69,22 @@ Walk through each dimension **one at a time, interactively**. For each:
 3. Describe what a 10 looks like for THIS specific project
 4. Name one concrete action that would raise the score
 
-Ask the user if they want to discuss before moving on.
+### Surfacing decisions (applies to all dimensions)
+
+Follow the interaction discipline in CLAUDE.md. Specifically:
+
+- **If a dimension surfaces a modeling fork** (e.g., simplicity ladder level,
+  fairness metric choice, explainability method, evaluation strategy trade-off),
+  use `AskUserQuestion` — don't bury it in the rationale.
+- **Limit to 2-3 decisions per dimension.** Pick the most consequential forks.
+  Save the rest for the risk map in Step 3.
+- **Each question must be self-contained.** Include the concrete alternatives and
+  what changes downstream, so the user can answer without re-reading.
+- **Lead with the decision.** If analysis reveals a fork, put the AskUserQuestion
+  immediately after the score — not at the bottom of a long discussion.
+- **Don't ask for permission to continue.** Just proceed to the next dimension.
+  AskUserQuestion is for forks that change what you'd score or recommend, not
+  for "Ready for Dimension 4?"
 
 ---
 
