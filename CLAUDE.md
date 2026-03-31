@@ -163,6 +163,18 @@ Bump at ship time, not per-commit during development.
 
 ## Commit style
 
+Format: `type: description (vX.Y.Z.W)`
+
+Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
+
+Examples:
+- `feat: add update check and upgrade system (v0.1.1.0)`
+- `fix: portable sed in praxis-config (v0.1.1.1)`
+- `docs: update project structure in CLAUDE.md (v0.1.1.1)`
+
+Include the version tag on ship commits (when VERSION is bumped). Development
+commits during a branch don't need the version tag — add it on the final commit.
+
 Every commit should be a single logical change. When you've made multiple changes,
 split them into separate commits. Each commit should be independently understandable
 and revertable.
