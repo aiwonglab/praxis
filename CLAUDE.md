@@ -142,6 +142,20 @@ Researchers need interactive clarification before acting on ambiguous tasks.
 2. Type errors: `uv run pyright`
 3. Linting: `uv run ruff check . --fix`
 
+## Versioning — MAJOR.MINOR.PATCH.MICRO
+
+VERSION file is the source of truth. Keep pyproject.toml in sync.
+
+| Digit | When to bump | Auto-decide? |
+|-------|-------------|-------------|
+| **MICRO** (4th) | < 50 lines changed — typos, config, small refinements | Yes |
+| **PATCH** (3rd) | 50+ lines — bug fixes, small-medium features | Yes |
+| **MINOR** (2nd) | Major features, new skills, architectural changes | Ask user |
+| **MAJOR** (1st) | Milestones, breaking changes to skill structure | Ask user |
+
+Bumping any digit resets all digits to its right to 0.
+Bump at ship time, not per-commit during development.
+
 ## Commit style
 
 Every commit should be a single logical change. When you've made multiple changes,
