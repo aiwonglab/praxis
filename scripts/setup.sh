@@ -22,7 +22,7 @@ echo "  source: $PRAXIS_DIR"
 shopt -s nullglob
 if [ "$SKILLS_BASENAME" = "skills" ]; then
   linked=()
-  for skill_dir in "$PRAXIS_DIR"/plan-*/; do
+  for skill_dir in "$PRAXIS_DIR"/*/; do
     if [ -f "$skill_dir/SKILL.md" ]; then
       skill_name="$(basename "$skill_dir")"
       target="$SKILLS_DIR/$skill_name"
@@ -54,7 +54,7 @@ echo ""
 echo "praxis ready."
 echo ""
 echo "Available skills:"
-for skill_dir in "$PRAXIS_DIR"/plan-*/; do
+for skill_dir in "$PRAXIS_DIR"/*/; do
   if [ -f "$skill_dir/SKILL.md" ]; then
     echo "  /$(basename "$skill_dir")"
   fi
@@ -64,5 +64,6 @@ echo "Add this to your project's CLAUDE.md:"
 echo ""
 echo '  ## praxis'
 echo '  Clinical research skills from praxis. Available skills:'
-echo '  /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review'
+echo '  /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review,'
+echo '  /praxis-upgrade'
 echo '  See ETHOS.md for foundational principles.'
