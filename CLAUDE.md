@@ -37,6 +37,9 @@ praxis/
 ├── .gitignore             # Python + data science ignores
 ├── pyproject.toml         # project metadata
 ├── README.md              # project overview
+├── bin/
+│   ├── praxis-config      # read/write ~/.praxis/config.yaml
+│   └── praxis-update-check # periodic version check (called by skill preambles)
 ├── plan-pi-review/
 │   └── SKILL.md           # PI-level research strategy audit
 ├── plan-ds-review/
@@ -45,6 +48,8 @@ praxis/
 │   └── SKILL.md           # model selection, fairness & explainability audit
 ├── plan-clinical-review/
 │   └── SKILL.md           # bedside validity, safety & actionability audit
+├── praxis-upgrade/
+│   └── SKILL.md           # upgrade praxis to latest version
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
 └── src/

@@ -27,7 +27,16 @@ data and methods can answer it correctly.
 
 ---
 
-## Step 0 — Read the plan and data context
+## Step 0 — Update check + Read the plan and data context
+
+Before starting, check for updates:
+```bash
+_UPD=$(~/.claude/skills/praxis/bin/praxis-update-check 2>/dev/null || .claude/skills/praxis/bin/praxis-update-check 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+```
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the praxis-upgrade SKILL.md
+and follow the "Inline upgrade flow". If `JUST_UPGRADED <from> <to>`: tell user
+"Running praxis v{to} (just updated!)" and continue.
 
 Read any plan files, data dictionaries, or pipeline descriptions in the working
 directory. If insufficient, ask the user:

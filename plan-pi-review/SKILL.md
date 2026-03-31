@@ -21,7 +21,17 @@ infeasible data, scope mismatch — that are expensive to discover late.
 
 ---
 
-## Step 0 — Read the plan
+## Step 0 — Update check + Read the plan
+
+Before starting, check for updates:
+```bash
+_UPD=$(~/.claude/skills/praxis/bin/praxis-update-check 2>/dev/null || .claude/skills/praxis/bin/praxis-update-check 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+```
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the praxis-upgrade SKILL.md
+and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise
+AskUserQuestion with 4 options). If `JUST_UPGRADED <from> <to>`: tell user
+"Running praxis v{to} (just updated!)" and continue.
 
 Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
 `*.plan.md`, or files in `plans/`). If no plan file exists, ask the user:
