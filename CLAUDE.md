@@ -39,6 +39,7 @@ praxis/
 ├── README.md              # project overview
 ├── bin/
 │   ├── praxis-config      # read/write ~/.praxis/config.yaml
+│   ├── praxis-learn       # per-project learnings storage (JSONL)
 │   └── praxis-update-check # periodic version check (called by skill preambles)
 ├── plan-pi-review/
 │   └── SKILL.md           # PI-level research strategy audit
@@ -48,6 +49,8 @@ praxis/
 │   └── SKILL.md           # model selection, fairness & explainability audit
 ├── plan-clinical-review/
 │   └── SKILL.md           # bedside validity, safety & actionability audit
+├── learn/
+│   └── SKILL.md           # view, add, search, prune project learnings
 ├── praxis-upgrade/
 │   └── SKILL.md           # upgrade praxis to latest version
 ├── scripts/

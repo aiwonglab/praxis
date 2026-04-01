@@ -33,6 +33,16 @@ and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise
 AskUserQuestion with 4 options). If `JUST_UPGRADED <from> <to>`: tell user
 "Running praxis v{to} (just updated!)" and continue.
 
+Load project learnings:
+```bash
+_LEARN_COUNT=$(~/.claude/skills/praxis/bin/praxis-learn count 2>/dev/null || .claude/skills/praxis/bin/praxis-learn count 2>/dev/null || echo "0")
+echo "LEARNINGS: $_LEARN_COUNT entries loaded"
+```
+If count > 0, read the learnings file. During dimensional scoring, apply relevant
+learnings (especially `definition-pitfall` and `user-stated` types) — see
+`learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
+doesn't match the current project.
+
 Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
 `*.plan.md`, or files in `plans/`). If no plan file exists, ask the user:
 

@@ -44,6 +44,16 @@ If output shows `UPGRADE_AVAILABLE <old> <new>`: read the praxis-upgrade SKILL.m
 and follow the "Inline upgrade flow". If `JUST_UPGRADED <from> <to>`: tell user
 "Running praxis v{to} (just updated!)" and continue.
 
+Load project learnings:
+```bash
+_LEARN_COUNT=$(~/.claude/skills/praxis/bin/praxis-learn count 2>/dev/null || .claude/skills/praxis/bin/praxis-learn count 2>/dev/null || echo "0")
+echo "LEARNINGS: $_LEARN_COUNT entries loaded"
+```
+If count > 0, read the learnings file. During dimensional scoring, apply relevant
+learnings (especially `clinical-insight` types for safety and face validity) — see
+`learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
+doesn't match the current project.
+
 Read any plan files. If insufficient, ask the user:
 
 1. What is the clinical scenario? (e.g., "mechanically ventilated ICU patient
