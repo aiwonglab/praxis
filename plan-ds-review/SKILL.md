@@ -74,13 +74,31 @@ Walk through each dimension **one at a time, interactively**. For each:
 3. Describe what a 10 looks like for THIS specific project
 4. Name one concrete action that would raise the score
 
+### Confidence-tagged findings
+
+Each finding within a dimension gets a confidence tag (1-10):
+
+- **High (8-10):** Will produce wrong results or invalidate the pipeline.
+  Surface via `AskUserQuestion` if it involves a fork.
+- **Medium (5-7):** Worth addressing but won't corrupt the analysis.
+  Include in rationale with the concrete action.
+- **Low (1-4):** Worth noting for completeness.
+  Include in prose only — don't surface as a decision.
+
+After scoring each dimension, list findings in a table:
+
+```
+| Finding | Confidence | Action |
+|---------|-----------|--------|
+| [specific finding] | X/10 | [what to do] |
+```
+
 ### Surfacing decisions (applies to all dimensions)
 
 Follow the interaction discipline in CLAUDE.md. Specifically:
 
-- **If a dimension surfaces a methodological fork** (e.g., which derived table to
-  use, how to handle a temporal alignment issue, whether to filter by specimen
-  type), use `AskUserQuestion` — don't bury it in prose.
+- **Only high-confidence forks (8+) get `AskUserQuestion`.** Medium and low
+  findings stay in the rationale.
 - **Limit to 2-3 decisions per dimension.** Pick the most consequential forks.
   Save lower-stakes items for the data flow diagram in Step 3.
 - **Each question must be self-contained.** Include enough context (table names,
@@ -89,8 +107,7 @@ Follow the interaction discipline in CLAUDE.md. Specifically:
 - **Lead with the decision.** If you've written analysis that reveals a fork,
   put the AskUserQuestion immediately after the score — not at the bottom.
 - **Don't ask for permission to continue.** Just proceed to the next dimension
-  unless the user stops you. AskUserQuestion is for forks that change what you'd
-  score or recommend downstream, not for "Ready for Dimension 4?"
+  unless the user stops you.
 
 ---
 
@@ -464,6 +481,12 @@ quality, false positive rates).
 | Feature engineering & leakage | X/10 | ... |
 | Statistical validity | X/10 | ... |
 | Reproducibility & pipeline | X/10 | ... |
+
+**Key findings**:
+| Finding | Confidence | Status |
+|---------|-----------|--------|
+| [highest-confidence finding] | X/10 | [open / resolved / deferred] |
+| ... | ... | ... |
 
 **Data flow risk**: [which step in the pipeline is weakest]
 **Biggest threat**: ...
