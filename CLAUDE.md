@@ -51,6 +51,8 @@ praxis/
 │   └── SKILL.md           # bedside validity, safety & actionability audit
 ├── iterate/
 │   └── SKILL.md           # advance research process — orchestrate reviews
+├── office-hours/
+│   └── SKILL.md           # research formulation — idea to PLAN.md
 ├── learn/
 │   └── SKILL.md           # view, add, search, prune project learnings
 ├── praxis-upgrade/

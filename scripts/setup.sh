@@ -65,5 +65,5 @@ echo ""
 echo '  ## praxis'
 echo '  Clinical research skills from praxis. Available skills:'
 echo '  /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review,'
-echo '  /praxis-upgrade'
+echo '  /office-hours, /iterate, /learn, /praxis-upgrade'
 echo '  See ETHOS.md for foundational principles.'

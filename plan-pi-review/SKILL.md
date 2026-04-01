@@ -44,14 +44,27 @@ learnings (especially `definition-pitfall` and `user-stated` types) — see
 doesn't match the current project.
 
 Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
-`*.plan.md`, or files in `plans/`). If no plan file exists, ask the user:
+`*.plan.md`, or files in `plans/`). If no plan file exists, offer `/office-hours`:
 
+Use `AskUserQuestion`:
+"No plan file found. `/office-hours` helps you turn a research idea into a
+structured PLAN.md through six targeted questions — takes about 10 minutes
+and gives this review much sharper input."
+
+Options:
+- A) Run /office-hours first (recommended if the idea isn't fully formed)
+- B) Skip — I'll give you the basics now
+
+If B, ask the user for:
 1. The research question (one sentence)
 2. The proposed approach (2-3 sentences)
 3. The target dataset(s)
 4. The intended output (paper, tool, pilot, grant aim)
 
-Do NOT proceed until you have all four.
+If A, invoke `office-hours/SKILL.md` using the composable skill convention.
+When it completes and PLAN.md is written, return here and continue.
+
+Do NOT proceed until you have a plan (from PLAN.md or from user answers).
 
 ## Step 1 — Classify the research type
 
