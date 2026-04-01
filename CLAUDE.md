@@ -147,6 +147,23 @@ Researchers need interactive clarification before acting on ambiguous tasks.
 2. Type errors: `uv run pyright`
 3. Linting: `uv run ruff check . --fix`
 
+## Composable skills
+
+Skills can invoke other skills inline. When a skill needs to call another:
+
+1. Read the target skill's `SKILL.md`
+2. Skip Step 0 (update check + context gathering — already done in this session)
+3. Follow the remaining steps, using the plan and data context from the current session
+4. Return to the calling skill when done
+
+Example: `/iterate` invokes `plan-ds-review` when a data pipeline change is detected.
+The DS review skips its own Step 0 and uses the plan context already gathered by
+`/iterate`.
+
+Skills should reference this convention rather than embedding another skill's logic
+inline. If a skill only needs a subset (e.g., PI review's definition audit), it can
+specify: "Read `plan-pi-review/SKILL.md` Step 1.5 only."
+
 ## Versioning — MAJOR.MINOR.PATCH.MICRO
 
 VERSION file is the source of truth. Keep pyproject.toml in sync.
