@@ -5,7 +5,13 @@ support. Each item was explicitly considered and deferred, not forgotten.
 
 ---
 
-## 1. Reconcile the `dev` branch
+## 1. Reconcile the `dev` branch (DONE 2026-11-17, v0.5.0.0)
+
+Both commits were cherry-picked onto prod and adapted: the skill ships as
+`/praxis-office-hours` (gstack owns `/office-hours`), offered up front only at
+high effort, and the /iterate build step formats only changed files. `dev` can
+now be deleted.
+
 
 **What:** Decide the fate of `origin/dev`, which is ahead of `prod` by 2 commits
 and behind by 11.

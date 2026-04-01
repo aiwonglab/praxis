@@ -1,6 +1,6 @@
 ---
 name: iterate
-version: 1.1.0
+version: 1.2.0
 description: |
   Advance the research process. Detects what changed, checks for scope drift,
   routes to the right review skills, captures learnings, and logs progress.
@@ -216,14 +216,21 @@ If no review is needed (e.g., only documentation changes), skip to Step 4.5.
 ## Step 4.5 — Build & verify
 
 If implementation artifacts changed (code in `src/`, pipeline scripts, notebooks),
-run the project's build checks. Read CLAUDE.md for the exact commands. Default:
+run the project's build checks. Read CLAUDE.md for the exact commands. Format and
+lint **only the Python files changed in this iteration** (from Step 2), never a
+whole folder: untouched files can hold someone's uncommitted edits, and a
+repo-wide format buries the real diff. Default:
 
 ```bash
-uv run ruff format . 2>&1 | tail -5
-uv run ruff check . --fix 2>&1 | tail -10
+_PY=$(git diff --name-only --diff-filter=d HEAD -- '*.py'; git ls-files --others --exclude-standard -- '*.py')
+[ -n "$_PY" ] && echo "$_PY" | xargs -d '\n' uv run ruff format 2>&1 | tail -5
+[ -n "$_PY" ] && echo "$_PY" | xargs -d '\n' uv run ruff check --fix 2>&1 | tail -10
 uv run pyright 2>&1 | tail -10
 uv run pytest 2>&1 | tail -20
 ```
+
+Read each result for failure (`Traceback`, `error`, `FAILED`) before reading it
+for success: a tail can show a pass line under an earlier failure.
 
 **Routing:** Only run checks relevant to what changed:
 - Code formatting/linting: always if any `.py` file changed

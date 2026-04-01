@@ -103,7 +103,7 @@ Thread 3 (LLM extraction) ──────────→ Thread 4 (multimodal
 |-------|---------|---------------|
 | `/plan-irb-review` | Reviewer-side audit of a submitted or approved protocol and its ongoing conduct — the late-stage counterpart to `/plan-protocol`, the way `/review` is the late-stage counterpart to a plan review. Reads the protocol, the pipeline, and the deviations log together. | When the first protocol has been approved and the cohort is being built against it |
 | `/plan-program-review` | Multi-project coherence review — do the threads form a fundable program (R01, K-award)? Evaluate narrative arc, dependency sequencing, and portfolio balance. | When preparing a grant application or annual review |
-| `/office-hours` | Research hypothesis brainstorm — pre-PI-review ideation for new threads | When exploring whether a question is worth pursuing |
+| `/praxis-office-hours` | Research hypothesis brainstorm — pre-PI-review ideation for new threads | When exploring whether a question is worth pursuing |
 
 ## Long-term learning: MD-based project memory
 

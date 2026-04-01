@@ -4,6 +4,19 @@ All notable changes to praxis. The current release is tracked in the `VERSION`
 file; `bin/praxis-update-check` compares it against `prod/VERSION` to prompt
 upgrades. Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [0.5.0.0] — 2026-11-17
+
+### Added
+- `/praxis-office-hours`: research formulation, from a half-formed idea to a
+  PLAN.md through six questions (from the unshipped `dev` branch, renamed
+  because gstack owns `/office-hours`). `/plan-pi-review` offers it up front
+  only at high effort; at low and medium the closing question gains a
+  **Formulate first** option when there was no plan or the question is not
+  yet formed.
+- `/iterate` Step 4.5, build & verify: ruff, pyright and pytest when code
+  changed, failures split into in-branch and pre-existing. Formats and lints
+  only the files changed in the iteration, never a whole folder.
+
 ## [0.4.0.0] — 2026-11-16
 
 ### Added

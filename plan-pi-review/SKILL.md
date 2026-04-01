@@ -1,6 +1,6 @@
 ---
 name: plan-pi-review
-version: 1.2.0
+version: 1.3.0
 description: |
   Research strategy audit from a senior physician-scientist's seat. Challenges
   the question itself before any implementation: is it worth answering, is the
@@ -79,7 +79,17 @@ Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
 3. The target dataset(s)
 4. The intended output (paper, tool, pilot, grant aim)
 
-Do NOT proceed until you have all four.
+At **high** effort only, ask that in one AskUserQuestion that also offers
+`/praxis-office-hours` first: "No plan file found. `/praxis-office-hours` turns
+a research idea into a structured PLAN.md through six targeted questions,
+about 10 minutes, and gives this review sharper input." Options: **Run
+/praxis-office-hours first** (if the idea isn't fully formed), **Give the
+basics now**. If the user picks office-hours, invoke
+`praxis-office-hours/SKILL.md` using the composable skill convention; when it
+completes and PLAN.md is written, return here and continue. At low and medium,
+never offer it up front; the close offers it instead (*Effort on a plan*).
+
+Do NOT proceed until you have a plan (from PLAN.md or from the four answers).
 
 ## Step 0.1 — Effort level
 
@@ -650,6 +660,11 @@ the same round as any proposed learnings: **Stop here** (first option),
 full audit, with this pass as its starting point). Name in each option what
 it would add for this plan. Once the user picks Stop, do not ask again this
 session.
+
+When no plan file existed, or the findings show the question is not yet
+formed (no single question, no dataset, an unbounded scope), add a fourth
+option, **Formulate first**: run `/praxis-office-hours` to write a PLAN.md,
+then review that plan at the level the user picks.
 
 ---
 

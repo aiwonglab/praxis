@@ -40,7 +40,13 @@ def test_high_path_is_verbatim() -> None:
     body = old[old.index("## Step 0.5 — Bounded reconnaissance") :]
     assert body in SKILL.read_text()
     intake = old[old.index("Read any plan files") : old.index("## Step 0.5")]
-    assert intake in SKILL.read_text()
+    # 0.5.0.0: the one sanctioned change to the high intake is the
+    # /praxis-office-hours offer, which replaces the closing sentence.
+    closing = "Do NOT proceed until you have all four.\n\n"
+    assert intake.endswith(closing)
+    now = SKILL.read_text()
+    assert intake.removesuffix(closing) in now
+    assert "Do NOT proceed until you have a plan (from PLAN.md or from the four" in now
 
 
 REVIEWS = [
@@ -103,3 +109,24 @@ def test_runner_defaults_to_low() -> None:
     from praxis.answer import Spec
 
     assert Spec("eicu_demo", "icu_los").effort == "low"
+
+
+def test_office_hours_is_namespaced_and_high_only_up_front() -> None:
+    oh = (ROOT / "praxis-office-hours" / "SKILL.md").read_text()
+    assert oh.startswith("---\nname: praxis-office-hours\n")
+    assert not (ROOT / "office-hours").exists()  # gstack owns /office-hours
+    for f in ROOT.glob("*/SKILL.md"):
+        assert "`/office-hours`" not in f.read_text(), f
+    pi = (ROOT / "plan-pi-review" / "SKILL.md").read_text()
+    intake = pi[pi.index("If no plan file exists") : pi.index("## Step 0.1")]
+    assert "At **high** effort only" in intake
+    assert "never offer it up front" in intake
+    assert "**Formulate first**" in pi
+
+
+def test_iterate_build_step_formats_changed_files_only() -> None:
+    it = (ROOT / "iterate" / "SKILL.md").read_text()
+    step = it[it.index("## Step 4.5") : it.index("## Step 5")]
+    assert "ruff format ." not in step
+    assert "ruff check . " not in step
+    assert "only the Python files changed" in step
