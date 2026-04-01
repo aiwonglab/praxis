@@ -45,6 +45,16 @@ If output shows `UPGRADE_AVAILABLE <old> <new>`: read the praxis-upgrade SKILL.m
 and follow the "Inline upgrade flow". If `JUST_UPGRADED <from> <to>`: tell user
 "Running praxis v{to} (just updated!)" and continue.
 
+Load project learnings:
+```bash
+_LEARN_COUNT=$(~/.claude/skills/praxis/bin/praxis-learn count 2>/dev/null || .claude/skills/praxis/bin/praxis-learn count 2>/dev/null || echo "0")
+echo "LEARNINGS: $_LEARN_COUNT entries loaded"
+```
+If count > 0, read the learnings file. During dimensional scoring, apply relevant
+learnings (especially `clinical-insight` types for fairness dimensions) — see
+`learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
+doesn't match the current project.
+
 Read any plan files, model specifications, or architecture docs. If insufficient,
 ask the user:
 
@@ -78,13 +88,31 @@ Walk through each dimension **one at a time, interactively**. For each:
 3. Describe what a 10 looks like for THIS specific project
 4. Name one concrete action that would raise the score
 
+### Confidence-tagged findings
+
+Each finding within a dimension gets a confidence tag (1-10):
+
+- **High (8-10):** Will invalidate results, introduce bias, or violate fairness.
+  Surface via `AskUserQuestion` if it involves a fork.
+- **Medium (5-7):** Worth addressing but won't break the model.
+  Include in rationale with the concrete action.
+- **Low (1-4):** Worth noting for completeness.
+  Include in prose only — don't surface as a decision.
+
+After scoring each dimension, list findings in a table:
+
+```
+| Finding | Confidence | Action |
+|---------|-----------|--------|
+| [specific finding] | X/10 | [what to do] |
+```
+
 ### Surfacing decisions (applies to all dimensions)
 
 Follow the interaction discipline in CLAUDE.md. Specifically:
 
-- **If a dimension surfaces a modeling fork** (e.g., simplicity ladder level,
-  fairness metric choice, explainability method, evaluation strategy trade-off),
-  use `AskUserQuestion` — don't bury it in the rationale.
+- **Only high-confidence forks (8+) get `AskUserQuestion`.** Medium and low
+  findings stay in the rationale.
 - **Limit to 2-3 decisions per dimension.** Pick the most consequential forks.
   Save the rest for the risk map in Step 3.
 - **Each question must be self-contained.** Include the concrete alternatives and
@@ -92,8 +120,6 @@ Follow the interaction discipline in CLAUDE.md. Specifically:
 - **Lead with the decision.** If analysis reveals a fork, put the AskUserQuestion
   immediately after the score — not at the bottom of a long discussion.
 - **Don't ask for permission to continue.** Just proceed to the next dimension.
-  AskUserQuestion is for forks that change what you'd score or recommend, not
-  for "Ready for Dimension 4?"
 
 ---
 
@@ -451,6 +477,12 @@ After scoring, synthesize into a risk map:
 | Explainability & interpretability | X/10 | ... |
 | Generalizability & robustness | X/10 | ... |
 | Computational & deployment | X/10 | ... |
+
+**Key findings**:
+| Finding | Confidence | Status |
+|---------|-----------|--------|
+| [highest-confidence finding] | X/10 | [open / resolved / deferred] |
+| ... | ... | ... |
 
 **Highest-risk decision**: ...
 **Fairness hotspot**: ...

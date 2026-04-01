@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# praxis-learn — read/write per-project learnings
+#
+# Usage:
+#   praxis-learn add <json>           — append a learning entry
+#   praxis-learn list [--type TYPE]   — list all learnings (optionally filtered)
+#   praxis-learn search <term>        — search learnings across all projects
+#   praxis-learn prune <id>           — remove a learning by id
+#   praxis-learn count                — count learnings for current project
+#
+# Env overrides:
+#   PRAXIS_STATE_DIR  — override ~/.praxis state directory
+#   PRAXIS_PROJECT    — override auto-detected project slug
+set -euo pipefail
+
+STATE_DIR="${PRAXIS_STATE_DIR:-$HOME/.praxis}"
+
+# Auto-detect project slug from git remote or directory name
+detect_slug() {
+  local remote slug
+  remote="$(git remote get-url origin 2>/dev/null || true)"
+  if [ -n "$remote" ]; then
+    slug="$(basename "$remote" .git)"
+  else
+    slug="$(basename "$(pwd)")"
+  fi
+  echo "$slug"
+}
+
+SLUG="${PRAXIS_PROJECT:-$(detect_slug)}"
+PROJECT_DIR="$STATE_DIR/projects/$SLUG"
+LEARNINGS_FILE="$PROJECT_DIR/learnings.jsonl"
+
+case "${1:-}" in
+  add)
+    JSON="${2:?Usage: praxis-learn add '<json>'}"
+    mkdir -p "$PROJECT_DIR"
+    echo "$JSON" >> "$LEARNINGS_FILE"
+    echo "Learning saved to $SLUG"
+    ;;
+  list)
+    if [ ! -f "$LEARNINGS_FILE" ]; then
+      echo "No learnings for $SLUG"
+      exit 0
+    fi
+    TYPE_FILTER="${3:-}"
+    if [ "${2:-}" = "--type" ] && [ -n "$TYPE_FILTER" ]; then
+      grep "\"type\":\"$TYPE_FILTER\"" "$LEARNINGS_FILE" 2>/dev/null || echo "No learnings of type $TYPE_FILTER"
+    else
+      cat "$LEARNINGS_FILE"
+    fi
+    ;;
+  search)
+    TERM="${2:?Usage: praxis-learn search <term>}"
+    # Search across all projects
+    if [ -d "$STATE_DIR/projects" ]; then
+      grep -ri "$TERM" "$STATE_DIR/projects"/*/learnings.jsonl 2>/dev/null || echo "No matches for '$TERM'"
+    else
+      echo "No learnings stored yet"
+    fi
+    ;;
+  prune)
+    ID="${2:?Usage: praxis-learn prune <id>}"
+    if [ ! -f "$LEARNINGS_FILE" ]; then
+      echo "No learnings for $SLUG"
+      exit 0
+    fi
+    BEFORE=$(wc -l < "$LEARNINGS_FILE" | tr -d ' ')
+    TMPFILE=$(mktemp)
+    grep -v "\"id\":\"$ID\"" "$LEARNINGS_FILE" > "$TMPFILE" || true
+    mv "$TMPFILE" "$LEARNINGS_FILE"
+    AFTER=$(wc -l < "$LEARNINGS_FILE" | tr -d ' ')
+    REMOVED=$((BEFORE - AFTER))
+    echo "Removed $REMOVED entries"
+    ;;
+  count)
+    if [ ! -f "$LEARNINGS_FILE" ]; then
+      echo "0"
+    else
+      wc -l < "$LEARNINGS_FILE" | tr -d ' '
+    fi
+    ;;
+  *)
+    echo "Usage: praxis-learn {add|list|search|prune|count} [args]"
+    exit 1
+    ;;
+esac

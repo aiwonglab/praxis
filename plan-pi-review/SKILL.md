@@ -33,6 +33,16 @@ and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise
 AskUserQuestion with 4 options). If `JUST_UPGRADED <from> <to>`: tell user
 "Running praxis v{to} (just updated!)" and continue.
 
+Load project learnings:
+```bash
+_LEARN_COUNT=$(~/.claude/skills/praxis/bin/praxis-learn count 2>/dev/null || .claude/skills/praxis/bin/praxis-learn count 2>/dev/null || echo "0")
+echo "LEARNINGS: $_LEARN_COUNT entries loaded"
+```
+If count > 0, read the learnings file. During dimensional scoring, apply relevant
+learnings (especially `definition-pitfall` and `user-stated` types) — see
+`learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
+doesn't match the current project.
+
 Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
 `*.plan.md`, or files in `plans/`). If no plan file exists, ask the user:
 
@@ -199,13 +209,35 @@ Walk through each dimension **one at a time, interactively**. For each dimension
 
 Do NOT output all seven scores at once.
 
+### Confidence-tagged findings
+
+Each finding within a dimension gets a confidence tag (1-10):
+
+- **High (8-10):** Will break the study or fundamentally change the design.
+  Surface via `AskUserQuestion` if it involves a fork.
+- **Medium (5-7):** Worth addressing but won't invalidate the work.
+  Include in rationale with the concrete action.
+- **Low (1-4):** Worth noting for completeness.
+  Include in prose only — don't surface as a decision.
+
+After scoring each dimension, list findings in a table:
+
+```
+| Finding | Confidence | Action |
+|---------|-----------|--------|
+| [specific finding] | X/10 | [what to do] |
+```
+
+Confidence determines what gets an `AskUserQuestion` and what stays as commentary.
+Over iterations, track how confidence changes — a finding at 5/10 in iteration 1
+may harden to 9/10 after seeing data, or resolve to 0 after a fix.
+
 ### Surfacing decisions (applies to all dimensions)
 
 Follow the interaction discipline in CLAUDE.md. Specifically:
 
-- **If a dimension surfaces a methodological fork** (e.g., two valid approaches
-  to defining a cohort, two reasonable data sources, a scope trade-off), use
-  `AskUserQuestion` — don't bury it in the rationale paragraph.
+- **Only high-confidence forks (8+) get `AskUserQuestion`.** Medium and low
+  findings stay in the rationale — don't overwhelm with minor concerns.
 - **Limit to 2-3 decisions per dimension.** If scoring surfaces more, pick the
   most consequential ones now and save the rest for Step 3.
 - **Each question must be self-contained.** Include enough context that the user
@@ -214,8 +246,7 @@ Follow the interaction discipline in CLAUDE.md. Specifically:
   put the AskUserQuestion immediately after the score — not at the bottom of a
   long risk discussion.
 - **Don't ask for permission to continue.** "Ready for Dimension 4?" is not a
-  decision. Just proceed unless the user stops you. The AskUserQuestion is for
-  forks that change what you'd score or recommend downstream.
+  decision. Just proceed unless the user stops you.
 
 ---
 
@@ -461,6 +492,12 @@ Output this block at the end:
 | Scope calibration | X/10 | ... |
 | Risk & mitigation | X/10 | ... |
 | Collaboration readiness | X/10 | ... |
+
+**Key findings**:
+| Finding | Confidence | Status |
+|---------|-----------|--------|
+| [highest-confidence finding] | X/10 | [open / resolved / deferred] |
+| ... | ... | ... |
 
 **Definition inventory**: [number] concepts defined, [number] using consensus,
   [number] with sensitivity analyses planned
