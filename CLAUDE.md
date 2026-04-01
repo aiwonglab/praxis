@@ -49,6 +49,8 @@ praxis/
 │   └── SKILL.md           # model selection, fairness & explainability audit
 ├── plan-clinical-review/
 │   └── SKILL.md           # bedside validity, safety & actionability audit
+├── iterate/
+│   └── SKILL.md           # advance research process — orchestrate reviews
 ├── learn/
 │   └── SKILL.md           # view, add, search, prune project learnings
 ├── praxis-upgrade/
