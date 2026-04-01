@@ -180,7 +180,35 @@ If the review only needs a subset (e.g., definition audit only), specify:
 Before running reviews, tell the user what you're about to do:
 "Based on [what changed], running [review name(s)]. This will [what it checks]."
 
-If no review is needed (e.g., only documentation changes), skip to Step 5.
+If no review is needed (e.g., only documentation changes), skip to Step 4.5.
+
+---
+
+## Step 4.5 — Build & verify
+
+If implementation artifacts changed (code in `src/`, pipeline scripts, notebooks),
+run the project's build checks. Read CLAUDE.md for the exact commands. Default:
+
+```bash
+uv run ruff format . 2>&1 | tail -5
+uv run ruff check . --fix 2>&1 | tail -10
+uv run pyright 2>&1 | tail -10
+uv run pytest 2>&1 | tail -20
+```
+
+**Routing:** Only run checks relevant to what changed:
+- Code formatting/linting: always if any `.py` file changed
+- Type checking: if function signatures, imports, or type hints changed
+- Tests: if any code in `src/` or `tests/` changed
+
+**If tests fail:**
+- Classify as in-branch (caused by this iteration's changes) or pre-existing
+- In-branch failures: surface via `AskUserQuestion` — fix now or defer?
+- Pre-existing failures: note them, don't block the iteration
+
+**If no code changed** (plan-only iteration, definition changes): skip entirely.
+
+Output: `Build: [pass / N issues] | Tests: [pass / N failures (X in-branch, Y pre-existing)]`
 
 ---
 
