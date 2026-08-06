@@ -45,7 +45,7 @@ echo "LEARNINGS: $_LEARN_COUNT entries loaded"
 ```
 If count > 0, read the learnings file. During dimensional scoring, apply relevant
 learnings (especially `dataset-gotcha` and `statistical-trap` types) — see
-`learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
+`praxis-learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
 doesn't match the current project.
 
 Read any plan files, data dictionaries, or pipeline descriptions in the working

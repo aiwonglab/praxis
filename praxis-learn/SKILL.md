@@ -1,5 +1,5 @@
 ---
-name: learn
+name: praxis-learn
 version: 1.0.0
 description: |
   View, add, search, and prune project learnings. Learnings are hard-won
@@ -12,7 +12,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# /learn
+# /praxis-learn
 
 Manage project learnings — hard-won insights that feed back into review skills.
 
@@ -91,7 +91,7 @@ Fields:
 
 ## Commands
 
-### `/learn` — show learnings for this project
+### `/praxis-learn` — show learnings for this project
 
 ```bash
 ~/.claude/skills/praxis/bin/praxis-learn list 2>/dev/null || \
@@ -101,7 +101,7 @@ Fields:
 Display learnings grouped by type. For each, show content, confidence, valid_for,
 and created date. If no learnings exist, say "No learnings stored for this project yet."
 
-### `/learn search <term>` — search across all projects
+### `/praxis-learn search <term>` — search across all projects
 
 ```bash
 ~/.claude/skills/praxis/bin/praxis-learn search "TERM" 2>/dev/null || \
@@ -111,7 +111,7 @@ and created date. If no learnings exist, say "No learnings stored for this proje
 Show matches with project name and relevance. Cross-project learnings are valuable
 when starting a new study on the same dataset or condition.
 
-### `/learn add` — manually add a learning
+### `/praxis-learn add` — manually add a learning
 
 Ask the user for:
 1. What did you learn? (the content)
@@ -128,7 +128,7 @@ Construct the JSON and save:
 
 Substitute all values. Generate a short descriptive ID (e.g., `labevents-specimen-types`).
 
-### `/learn prune` — remove stale or wrong learnings
+### `/praxis-learn prune` — remove stale or wrong learnings
 
 Show all learnings with their IDs. Ask the user which to remove.
 
@@ -185,7 +185,7 @@ real time?** If the answer is no, don't store it. If yes, store it now — the
 moment it is obvious to you is exactly when you will forget to.
 
 Debugging an empty store: `praxis-learn` writes to
-`${PRAXIS_STATE_DIR:-$HOME/.praxis}/projects/<slug>/learnings.jsonl`, where slug
+`${PRAXIS_STATE_DIR:-$HOME/.praxis}/projects/<slug>/praxis-learnings.jsonl`, where slug
 comes from the git remote basename, falling back to the working-directory name.
 If a project has no remote and is run from different directories, learnings will
 scatter across slugs. Set `PRAXIS_PROJECT` explicitly for such projects.
