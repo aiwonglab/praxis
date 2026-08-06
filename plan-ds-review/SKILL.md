@@ -204,11 +204,48 @@ For **DICOM images**:
 - Windowing (window center/width) applied correctly for the modality?
 - Patient linkage: DICOM PatientID maps to which clinical identifier?
 
+For **undocumented / proprietary vendor exports** (hemodynamics, monitors,
+cath-lab and echo systems, anything with a vendor extension and no spec):
+
+Everything above assumes a published spec. When there is none, the layout is a
+*hypothesis derived from examples*, and the review must treat it as one.
+
+- **Does a native structured export already exist?** Vendor report feeds, HL7,
+  XML, database views. Reverse-engineering a container the vendor already emits
+  in a documented form is the most expensive way to get the same numbers.
+  (*Don't reinvent the wheel* — ask before building.)
+- **What independent artifact validates the decode?** A rendered report, printed
+  summary, or signed document derived from the same study. Name it, and report a
+  *quantitative* agreement metric against it — correlation and error in physical
+  units, not "looks right".
+- **Is that validation circular?** If both artifacts come out of the same vendor
+  pipeline, agreement proves your *decoding*, not the vendor's *correctness*.
+  Say which one you have established.
+- **How many files, dates, sites, and software versions** did the layout come
+  from? State it in the code, not just the write-up. Constants derived from a
+  handful of same-day files from one configuration are provisional.
+- **Which constants are read from the file, and which are assumed?** Sample
+  counts, channel counts, scale factors and units are the usual offenders. Every
+  assumed constant is a silent mis-parse waiting for a study recorded with a
+  different setting.
+- **Does the parser refuse or guess on unrecognised input?** Refusing costs a
+  failed file; guessing costs a plausible wrong number in a table.
+- **Are per-record invariants asserted?** Physiologic ranges, internal
+  consistency (systolic ≥ diastolic), declared-vs-actual counts. These are what
+  catch a shifted offset, which otherwise produces well-formed nonsense.
+- **Are failures logged with a raw field dump?** A refused parse should say
+  *why* — which field, what it held — or the format cannot be debugged at scale.
+
 Anti-patterns:
 - Loading CSVs without specifying dtypes (pandas infers wrong types silently)
 - Mixing polars and pandas without checking null semantics (NaN vs null)
 - Reading timestamps as strings and parsing with regex instead of proper datetime parsing
 - Loading entire datasets eagerly when only a subset is needed
+- Inferring a field's meaning from amplitude when the file carries a descriptor
+  table that states it
+- A cautionary docstring above a hardcoded constant, with no assertion
+- Validating a decode only against the sample the decode was derived from
+- Treating "all files parsed" as correctness when nothing checked the values
 
 ---
 

@@ -106,6 +106,7 @@ These are the current defaults, not doctrine. They'll evolve as the work demands
 | `/plan-ds-review` | Data pipeline and statistical rigor audit. Dataset-specific probes for MIMIC-IV, eICU, waveforms, DICOM. |
 | `/plan-ai-review` | Model and fairness audit. Evaluates selection, methodology, fairness, explainability, deployment readiness. |
 | `/plan-clinical-review` | Bedside validity and safety audit. Clinical actionability, workflow integration, population fit. |
+| `/plan-deid-review` | De-identification and disclosure-risk audit. Inventories identifier surfaces, verifies the checks themselves. RELEASE / HOLD / REWORK. |
 | Data discipline | No hardcoded paths. No PHI in logs. Reproducibility enforced by convention and tooling. |
 | Dev workflow | Inherited from gstack — `/review`, `/qa`, `/ship`, `/investigate`, `/retro`, and more. |
 
@@ -118,6 +119,7 @@ Our ethos and principles are in [ETHOS.md](ETHOS.md). The short version:
 - **Novel methods on reproducible foundations** — boring foundations, clear novelty
 - **Don't reinvent the wheel** — consensus definitions, existing phenotypes, published methods first
 - **Bring cleaner starting points** — to collaborators, to the next study, to the field
+- **Guardrails over warnings** — encode findings as assertions, not prose; prove each check fires
 - **Compound internally, share when ready** — fast iteration within studies, share the artifact when it's ready
 
 ## Disclaimer

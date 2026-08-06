@@ -28,6 +28,7 @@ Constraints:
 | `/plan-ds-review` | **Active** | Data pipeline, harmonization, stats & reproducibility audit. |
 | `/plan-ai-review` | **Active** | Model selection, fairness, explainability, generalizability audit. |
 | `/plan-clinical-review` | **Active** | Bedside validity, safety, actionability, workflow integration audit. |
+| `/plan-deid-review` | **Active** | De-identification & disclosure-risk audit. Run before data crosses any boundary. |
 
 ## Review chain protocol
 
@@ -36,7 +37,15 @@ Constraints:
 ```
 plan-pi-review → plan-ds-review → plan-ai-review → plan-clinical-review
 "Right question?"  "Right data?"     "Right model?"   "Right at bedside?"
+
+plan-deid-review — runs on the data-movement axis, not this chain
+"Safe to move?"
 ```
+
+`/plan-deid-review` is not a stage in the chain. It gates *movement* rather than
+progress: run it whenever data crosses a boundary, and re-run it on every batch,
+because the method that was complete for the last export is only a hypothesis
+about the next one.
 
 **Sequential within a thread**: PI must pass before DS runs. DS must pass before
 AI runs. Clinical review runs last.
@@ -69,6 +78,8 @@ Thread 3 (LLM extraction) ──────────→ Thread 4 (multimodal
 - Research-enabling tools (extraction, infrastructure): clinical review uses
   the "Monday morning" test instead of the 3 AM test
 - If PI review says PAUSE: stop. Resolve the blocker before downstream reviews.
+- `/plan-deid-review` has no skip rule. Public-data-only work still has an
+  identifier surface — figures, filenames, and notebook outputs all leave.
 
 ## Future skills
 

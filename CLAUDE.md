@@ -49,6 +49,8 @@ praxis/
 │   └── SKILL.md           # model selection, fairness & explainability audit
 ├── plan-clinical-review/
 │   └── SKILL.md           # bedside validity, safety & actionability audit
+├── plan-deid-review/
+│   └── SKILL.md           # de-identification & disclosure-risk audit
 ├── iterate/
 │   └── SKILL.md           # advance research process — orchestrate reviews
 ├── learn/
@@ -71,6 +73,36 @@ praxis/
 - **Data is sensitive**: Never log PHI. Never commit data files. Never print patient
   identifiers in error messages or logs.
 - **Reproducibility**: Pin random seeds. Document data versions. Track preprocessing steps.
+
+## Notebook handling
+
+- **Never execute the canonical notebook in place.** Copy it, execute the copy,
+  read the copy's outputs. `nbconvert --execute --inplace` rewrites `kernelspec`
+  to whatever ephemeral kernel happened to run, and a notebook pointing at a
+  kernel that doesn't exist fails to open in VS Code with an unhelpful error.
+- **Commit notebooks with outputs cleared.** An executed notebook contains
+  everything it printed — for PHI-adjacent work that includes the values it
+  reported scrubbing, and any source paths or filenames it walked.
+- Pin `kernelspec` to `python3`; strip `execution` metadata before committing.
+- A notebook that writes files should track them in a run ledger and end with an
+  audit cell reporting what was written and what was skipped, with reasons.
+  Anything that appears in neither list was missed by discovery — itself a finding.
+
+## Editing files programmatically
+
+When patching by string replacement — notebooks, generated files, bulk edits —
+**assert the anchor matched.** An unmatched replacement is silent: the script
+reports success, the file is unchanged, and the behaviour you thought you fixed
+is still there. This is especially dangerous when the patched code is a *check*,
+because the result is a validation that no longer validates.
+
+```python
+assert old in source, f"anchor not found: {old[:60]}"
+source = source.replace(old, new)
+```
+
+Then re-run and confirm the change took effect from its *output*, not from the
+absence of an error.
 
 ## Code philosophy
 

@@ -23,10 +23,21 @@ Learnings are experiential knowledge that doesn't live in code or git history:
 - **definition-pitfall**: What goes wrong when operationalizing a clinical definition
 - **statistical-trap**: Structural issues with a study design that repeat across projects
 - **clinical-insight**: Observations about clinical data patterns or measurement bias
+- **format-forensics**: What a proprietary or undocumented format actually does —
+  offsets, units, encodings, and which constants are variable
+- **deid-pitfall**: A surface an identifier survived on, or a de-identification
+  method that failed in a non-obvious way
+- **verification-gap**: A check that passed while inspecting nothing, or a guard
+  that was never proven to fire
 - **user-stated**: Explicit PI decisions or preferences
 
 Learnings are NOT: code patterns, architecture decisions, or things derivable from
 the codebase. Those belong in CLAUDE.md or comments.
+
+The last three types were added because reviews kept surfacing findings that had
+nowhere to go — the original five are clinical and statistical, but the recurring
+expensive lessons in EHR and vendor-data work are about formats, disclosure
+surfaces, and checks that lie.
 
 ## Event-gated invalidation (not time decay)
 
@@ -39,6 +50,9 @@ true, and flagged for re-verification when that context changes:
 | definition-pitfall | Definition source (e.g., `sepsis-3:2016`) | Consensus definition superseded |
 | statistical-trap | `permanent` | Never — structural truths |
 | clinical-insight | Source PMID or study | Contradicting evidence found |
+| format-forensics | Format + version (e.g., `xper-pw6:unknown`) | Vendor software upgrade, new site, new export config |
+| deid-pitfall | `permanent` | Never — disclosure surfaces don't stop existing |
+| verification-gap | `permanent` | Never — structural truths about testing |
 | user-stated | `permanent` | User explicitly changes it |
 
 When a review loads learnings, it checks: "Is this learning still applicable to the
@@ -135,6 +149,9 @@ scoring. The mapping:
 | statistical-trap | plan-ds-review | Dim 4 (Cohort & Bias), Dim 5 (Feature Engineering) |
 | clinical-insight | plan-clinical-review | Dim 1 (Face Validity), Dim 5 (Safety) |
 | clinical-insight | plan-ai-review | Dim 4 (Fairness) |
+| format-forensics | plan-ds-review | Dim 2 (Ingestion & Format Handling) |
+| deid-pitfall | plan-deid-review | Dim 1 (Identifier inventory), Dim 2 (Removal method) |
+| verification-gap | plan-deid-review, plan-ds-review | Dim 4 (Verification), Dim 7 (Reproducibility) |
 | user-stated | all | whichever dimension the preference applies to |
 
 When a learning is applied, the review says:
@@ -143,3 +160,32 @@ When a learning is applied, the review says:
 When a learning's `valid_for` context doesn't match the current project context,
 the review says:
 "Prior learning (verify): [content] — observed on [valid_for], current context is [X]"
+
+## How reviews *write* learnings
+
+Reviews read learnings in Step 0. Historically nothing wrote them, and the store
+stayed empty through sessions that generated a dozen hard-won lessons — every
+one of which had to be rediscovered later.
+
+**Every review skill ends by proposing learnings.** In the final step, before the
+structured summary:
+
+1. Identify findings that are *portable* — true beyond this project. A dataset
+   quirk, a format constant, a disclosure surface, a check that lied. Not "this
+   cohort was too small".
+2. Draft each as a one-paragraph learning with a type, confidence, and
+   `valid_for` tag.
+3. Show them and ask which to keep — `AskUserQuestion`, multi-select. Do not
+   persist silently; a wrong learning is worse than none, because it will be
+   injected into future reviews with authority.
+4. Persist the accepted ones with `praxis-learn add`.
+
+The test for a good learning: **would knowing this six months ago have saved
+real time?** If the answer is no, don't store it. If yes, store it now — the
+moment it is obvious to you is exactly when you will forget to.
+
+Debugging an empty store: `praxis-learn` writes to
+`${PRAXIS_STATE_DIR:-$HOME/.praxis}/projects/<slug>/learnings.jsonl`, where slug
+comes from the git remote basename, falling back to the working-directory name.
+If a project has no remote and is run from different directories, learnings will
+scatter across slugs. Set `PRAXIS_PROJECT` explicitly for such projects.

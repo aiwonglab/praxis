@@ -53,6 +53,33 @@ Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
 
 Do NOT proceed until you have all four.
 
+## Step 0.5 — Bounded reconnaissance
+
+Before scoring, spend a bounded amount of effort establishing facts that
+Dimension 3 (Data Feasibility) would otherwise be guessing at. **Time-box it** —
+a handful of commands, not an implementation.
+
+This step exists because reviews are usually invoked mid-task, not in front of a
+blank page. When work is already in flight the cheapest facts are often already
+reachable, and scoring feasibility from speculation wastes the review.
+
+Run only probes that are cheap and decisive:
+
+- Does the file / table / endpoint parse at all? Open one and look.
+- Do the required variables exist, under the names the plan assumes?
+- How many rows, patients, events — order of magnitude only.
+- Is there an **independent artifact** that could validate the pipeline later?
+  (a rendered report, a signed document, a published summary table) Name it now;
+  it is the difference between "the code ran" and "the output is right".
+- For an undocumented format: does a native structured export already exist and
+  make the whole effort unnecessary? (*Don't reinvent the wheel*)
+
+Report what you learned in three or four lines, then let it move the scores. A
+recon that shifts a dimension by two points has paid for itself.
+
+**Do not let this become the work.** If a probe needs more than a few minutes or
+any real implementation, stop and record it as an open question for Dimension 3.
+
 ## Step 1 — Classify the research type
 
 Identify which category (or combination) applies:
@@ -472,6 +499,43 @@ Deliver one of four verdicts:
 For ITERATE and PIVOT, name the specific dimensions and propose concrete fixes.
 For PAUSE, name the blocker and the action to unblock.
 
+## Step 4.5 — Findings to guardrails
+
+**Every finding at confidence ≥ 8 must name an artifact that will enforce it.**
+Not a paragraph. A thing that runs.
+
+This step exists because the characteristic failure of a good review is not
+missing the problem — it is naming the problem correctly, at high confidence,
+and then committing it anyway a few hours later. Prose does not survive contact
+with implementation. An assertion does.
+
+For each finding at 8+, fill in:
+
+| Finding | Confidence | Enforcing artifact | Lives in |
+|---------|-----------|-------------------|----------|
+| Constants generalised from n=4 same-day files | 9/10 | Read the value from the file; assert it against a plausible range; refuse on mismatch | parser module |
+| Cohort could silently empty on a column rename | 8/10 | Post-filter row-count assertion with expected order of magnitude | pipeline step |
+| Definition choice is load-bearing | 8/10 | Sensitivity analysis under the alternative, pre-registered | analysis plan |
+
+Acceptable artifacts, roughly in order of strength:
+
+1. **A refusal** — the code raises rather than emitting a value it cannot
+   corroborate. Strongest, because it cannot be ignored.
+2. **A test** — including a *negative* test proving the guard fires on bad input.
+   A check that has never failed is unverified.
+3. **A logged invariant** — printed every run, so drift is visible.
+4. **A config flag** — makes an implicit choice explicit and reviewable.
+5. **A pre-registered sensitivity analysis** — for definitional findings.
+
+If no artifact can be named, one of two things is true, and you must say which:
+the finding is weaker than 8, **or** the risk is being knowingly accepted. Write
+the acceptance down with the reason. Silent acceptance is how a 9/10 finding
+becomes a bug.
+
+**Warning signs that a "guardrail" is really still prose:** a docstring
+describing the risk, a comment saying `# TODO: validate`, a note in the plan, or
+a constant with a cautionary name. None of these fail when violated.
+
 ## Step 5 — Structured summary
 
 Output this block at the end:
@@ -494,10 +558,13 @@ Output this block at the end:
 | Collaboration readiness | X/10 | ... |
 
 **Key findings**:
-| Finding | Confidence | Status |
-|---------|-----------|--------|
-| [highest-confidence finding] | X/10 | [open / resolved / deferred] |
-| ... | ... | ... |
+| Finding | Confidence | Enforcing artifact | Status |
+|---------|-----------|-------------------|--------|
+| [highest-confidence finding] | X/10 | [assertion / test / refusal — or ACCEPTED] | [open / resolved / deferred] |
+| ... | ... | ... | ... |
+
+Findings at confidence ≥ 8 with an empty artifact column are not reportable —
+resolve them in Step 4.5 first.
 
 **Definition inventory**: [number] concepts defined, [number] using consensus,
   [number] with sensitivity analyses planned
