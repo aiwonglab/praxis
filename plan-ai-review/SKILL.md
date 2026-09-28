@@ -1,3 +1,22 @@
+---
+name: plan-ai-review
+version: 1.0.0
+description: |
+  Model selection, fairness, calibration, explainability and generalizability
+  audit for clinical AI. Biased toward simplicity and interpretability, and
+  pushes back on complexity the clinical problem does not justify. Run after
+  plan-ds-review when the project involves machine learning or clinical NLP.
+  Descriptive studies using standard statistics can skip to
+  plan-clinical-review.
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
+---
+
 # Plan AI Review — Model & Fairness Audit
 
 ## Identity

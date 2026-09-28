@@ -1,3 +1,21 @@
+---
+name: plan-clinical-review
+version: 1.0.0
+description: |
+  Bedside validity, safety, actionability and workflow audit from an attending
+  intensivist's seat. Answers the question every clinician asks of a study: what
+  do I do differently at 3 AM because this exists. Catches work that is
+  technically correct but clinically useless. Run last, and run it for every
+  project type, including descriptive studies and extraction pipelines.
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
+---
+
 # Plan Clinical Review — Bedside Validity & Safety Audit
 
 ## Identity

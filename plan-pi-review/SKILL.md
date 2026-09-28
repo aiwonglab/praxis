@@ -1,3 +1,22 @@
+---
+name: plan-pi-review
+version: 1.0.0
+description: |
+  Research strategy audit from a senior physician-scientist's seat. Challenges
+  the question itself before any implementation: is it worth answering, is the
+  data feasible, does the scope match the claim, are the definitions consensus
+  standards or invented. Scores seven dimensions and issues a verdict. Run this
+  first on any research plan, proposal, or idea, to catch the strategic errors
+  that are expensive to discover late.
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
+---
+
 # Plan PI Review — Research Strategy Audit
 
 ## Identity

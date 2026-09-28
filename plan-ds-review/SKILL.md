@@ -1,3 +1,22 @@
+---
+name: plan-ds-review
+version: 1.0.0
+description: |
+  Data pipeline, harmonization, statistics and reproducibility audit from a
+  biostatistician's seat. Catches the errors that produce publishable but wrong
+  results: leakage, immortal time bias, harmonization drift, silent type
+  coercion, and statistical misuse. Run after plan-pi-review, once the question
+  is settled and what remains is whether the data and methods can answer it
+  correctly.
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
+---
+
 # Plan DS Review — Data Science & Statistical Rigor Audit
 
 ## Identity
