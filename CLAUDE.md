@@ -51,6 +51,10 @@ praxis/
 │   └── SKILL.md           # bedside validity, safety & actionability audit
 ├── plan-deid-review/
 │   └── SKILL.md           # de-identification & disclosure-risk audit
+├── plan-protocol/
+│   ├── SKILL.md           # regulatory audit + IRB protocol drafting
+│   └── references/
+│       └── regulatory-index.md   # citation index, read on demand
 ├── iterate/
 │   └── SKILL.md           # advance research process — orchestrate reviews
 ├── learn/

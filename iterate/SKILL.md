@@ -140,6 +140,16 @@ Compare current state against the plan. Look for:
 - New operationalizations introduced
 - Inclusion/exclusion criteria altered
 
+**Regulatory drift** — the work moved outside the approved protocol:
+- Cohort, date window, site list, or data elements now exceed `protocol.lock.yaml`
+- A new use of an existing cohort that the objectives section does not name
+- A new person with data access who is not on the personnel list
+
+Regulatory drift is not the same as scope creep. Scope creep costs you focus;
+regulatory drift is a protocol deviation. If a scope-lock assertion fired, route
+to `/plan-protocol` and say plainly whether the answer is an amendment or a
+report — never a loosened constant.
+
 If drift is detected, surface the top 2-3 items via `AskUserQuestion`. Each
 question should include what the plan says, what the current state is, and whether
 the change is intentional.
@@ -159,11 +169,14 @@ Based on what changed (Step 2), decide which reviews to run:
 | Model or features | plan-ai-review | Selection, fairness, evaluation |
 | Results are in | plan-clinical-review | Face validity, actionability |
 | Definition changed | plan-pi-review (Step 1.5 only) | Definition audit |
+| Cohort, window, site, or data element changed | plan-protocol (Step 2, then 7) | The approved scope may no longer cover the pull |
+| New use of an existing cohort — second paper, grant prelim data, hand-off to a clinical service | plan-protocol (Step 2d only) | Approved data, unapproved purpose |
+| Data about to cross an institutional boundary | plan-deid-review, then plan-protocol Dim 5 | Disclosure surface plus the authority for the transfer |
 | Fix applied to prior finding | Re-score affected dimension only | Verify fix resolved the issue |
 | Iteration 1 (new plan) | plan-pi-review (full) | First-pass strategic review |
 
 **Routing rules:**
-- If multiple reviews needed, run in dependency order: PI → DS → AI → Clinical
+- If multiple reviews needed, run in dependency order: PI → protocol → DS → AI → Clinical
 - If a review gives a blocking verdict (REDESIGN, PIVOT, PAUSE, REFRAME, PREMATURE),
   stop and surface the blocker — don't run downstream reviews
 - For "fix applied" changes, don't re-run the entire review — re-score only the

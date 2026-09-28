@@ -29,15 +29,23 @@ Learnings are experiential knowledge that doesn't live in code or git history:
   method that failed in a non-obvious way
 - **verification-gap**: A check that passed while inspecting nothing, or a guard
   that was never proven to fire
+- **regulatory-trap**: What an IRB, privacy board, or FDA reviewer actually asked
+  for — a pathway that was re-routed, waiver language that cleared or didn't, an
+  agreement whose lead time was underestimated
 - **user-stated**: Explicit PI decisions or preferences
 
 Learnings are NOT: code patterns, architecture decisions, or things derivable from
 the codebase. Those belong in CLAUDE.md or comments.
 
-The last three types were added because reviews kept surfacing findings that had
+The last four types were added because reviews kept surfacing findings that had
 nowhere to go — the original five are clinical and statistical, but the recurring
 expensive lessons in EHR and vendor-data work are about formats, disclosure
-surfaces, and checks that lie.
+surfaces, checks that lie, and regulatory turnaround.
+
+`regulatory-trap` records what was *asked and decided*, never the contents of a
+determination as if it were a rule. "The IRB re-routed our exempt claim to
+expedited because the pull included free-text notes" is a learning. "Note pulls
+are expedited" is not — that is another institution's problem.
 
 ## Event-gated invalidation (not time decay)
 
@@ -53,6 +61,7 @@ true, and flagged for re-verification when that context changes:
 | format-forensics | Format + version (e.g., `xper-pw6:unknown`) | Vendor software upgrade, new site, new export config |
 | deid-pitfall | `permanent` | Never — disclosure surfaces don't stop existing |
 | verification-gap | `permanent` | Never — structural truths about testing |
+| regulatory-trap | Institution + rule version (e.g. `duke-irb:2026`, `common-rule:2018`) | Institutional policy change, rule revision, new guidance |
 | user-stated | `permanent` | User explicitly changes it |
 
 When a review loads learnings, it checks: "Is this learning still applicable to the
@@ -115,7 +124,9 @@ when starting a new study on the same dataset or condition.
 
 Ask the user for:
 1. What did you learn? (the content)
-2. What type? (dataset-gotcha / definition-pitfall / statistical-trap / clinical-insight / user-stated)
+2. What type? (dataset-gotcha / definition-pitfall / statistical-trap /
+   clinical-insight / format-forensics / deid-pitfall / verification-gap /
+   regulatory-trap / user-stated)
 3. How confident are you? (1-10)
 4. What makes this true? (the valid_for tag — dataset version, PMID, or "permanent")
 
@@ -152,6 +163,7 @@ scoring. The mapping:
 | format-forensics | plan-ds-review | Dim 2 (Ingestion & Format Handling) |
 | deid-pitfall | plan-deid-review | Dim 1 (Identifier inventory), Dim 2 (Removal method) |
 | verification-gap | plan-deid-review, plan-ds-review | Dim 4 (Verification), Dim 7 (Reproducibility) |
+| regulatory-trap | plan-protocol | Step 1 (Determinations), Dim 1 (Pathway), Step 5 (Ancillary reviews) |
 | user-stated | all | whichever dimension the preference applies to |
 
 When a learning is applied, the review says:

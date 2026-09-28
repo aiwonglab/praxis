@@ -4,6 +4,30 @@ All notable changes to praxis. The current release is tracked in the `VERSION`
 file; `bin/praxis-update-check` compares it against `prod/VERSION` to prompt
 upgrades. Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [Unreleased]
+
+### Added
+- `/plan-protocol` — regulatory expert that takes a reviewed plan through to a
+  submittable IRB protocol for an investigator-sponsored study. Threshold
+  determinations (research / human subjects / PHI authority / FDA-regulated
+  article / sponsor / sIRB / funding obligations), pathway and waiver findings
+  written to the regulatory text, an identifiability ladder and a closed
+  minimum-necessary element table, protocol drafting, seven scored dimensions,
+  a stipulation pre-mortem, and a `protocol.lock.yaml` scope contract the
+  pipeline asserts against. Verdicts: SUBMIT / REVISE / DETERMINE / HOLD.
+  Sponsor-investigator obligations under 21 CFR 312 and 812 are a first-class
+  branch, not a footnote.
+- `regulatory-trap` learning type, `valid_for` an institution and rule version.
+- `plan-protocol/references/regulatory-index.md` — citation index, read on demand
+  rather than on every invocation.
+
+### Changed
+- Review chain is now PI → protocol → DS → AI → Clinical. A protocol can be
+  revised after the science settles; a data pull cannot be retroactively
+  authorized.
+- `/iterate` routes cohort, window, site, element, and *new-use* changes to
+  `/plan-protocol`, and distinguishes regulatory drift from scope creep.
+
 ## [0.3.0.1] — 2026-08-07
 
 ### Fixed
