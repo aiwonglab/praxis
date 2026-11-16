@@ -1,12 +1,15 @@
 ---
 name: plan-clinical-review
-version: 1.0.0
+version: 1.1.0
 description: |
   Bedside validity, safety, actionability and workflow audit from an attending
   intensivist's seat. Answers the question every clinician asks of a study: what
   do I do differently at 3 AM because this exists. Catches work that is
   technically correct but clinically useless. Run last, and run it for every
   project type, including descriptive studies and extraction pipelines.
+  Takes an effort level: low (default: the 3 AM test and the top findings,
+  then asks whether to go further), medium (all seven dimensions in one pass)
+  or high (the full audit).
 allowed-tools:
   - Bash
   - Read
@@ -85,6 +88,29 @@ Read any plan files. If insufficient, ask the user:
 Do NOT proceed until the clinical scenario is concrete. "ICU patients" is not a
 clinical scenario. "A nurse notices SpO2 94% on a patient 12 hours post-admission
 to the MICU and wonders whether the patient is truly oxygenating adequately" is.
+
+## Step 0.1 — Effort level
+
+| Level | Shape |
+|-------|-------|
+| **low** (default) | Steps 0-1 (the 3 AM test), a silent pass over all seven dimensions, top findings only. No scores, no verdict. |
+| **medium** | Steps 0-1, all seven dimensions scored in one table, one-line verdict. |
+| **high** | Steps 0-5 as written. Unchanged. |
+
+Set it from the user's words: "low effort", "quick look", "first pass",
+"rough" mean **low**; "medium", "one pass", "before we build" mean **medium**;
+"rigorous", "full review", "for the paper", "before submission" mean
+**high**. No level stated means **low**: do not ask up front. Start low, and
+ask about more effort after the result, when the user can see what a deeper
+pass would add. A level the user stated holds for the session.
+
+**At every level:** Step 0 runs in full (update check, learnings, reading the
+context), and the definitions, thresholds and checks in this file are the
+same. Effort changes how much is scored and reported, never what counts as a
+finding. Safety and harm findings at confidence ≥ 8 are always reported, at any level.
+
+At **low** or **medium**, run Step 1 (the 3 AM test), then follow that level's section at the
+end of this file. At **high**, continue here unchanged.
 
 ## Step 1 — The 3 AM test
 
@@ -511,3 +537,42 @@ After scoring, synthesize:
 **Trust barrier**: ...
 **Next action**: ...
 ```
+
+---
+
+## Low effort — the 3 AM test and top findings
+
+Report the Step 1 answer first, in one or two lines: what a clinician does
+differently at 3 AM because this exists, or that nothing changes. Then make
+one silent pass over Dimensions 1-7 and report only findings at confidence
+≥ 8, at most five, safety and harm first, one line each: the dimension, what
+is wrong, the fix. No scores and no verdict.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the findings stand.
+- **Medium**: every dimension scored, with a verdict.
+- **High**: the full audit, integration map and structured summary.
+
+Name in each option what it would add for *this* project (for example "maps
+where the alert fires in the ICU workflow"). Once the user picks Stop, do not
+ask again this session.
+
+## Medium effort — one-pass review
+
+After Step 1, score Dimensions 1-7 in one pass as a single table (score, one
+line of evidence, the fix). Surface findings at confidence ≥ 8 with
+AskUserQuestion, at most two. Skip the clinical integration map (Step 3).
+Give the Step 4 verdict on one line, marked *(medium)*. VALID at medium is a
+one-pass read, not a substitute for high before anything reaches a patient.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the medium verdict stands.
+- **High**: the full audit, with this table as its starting point.
+
+Name in each option what it would add for *this* project (for example "maps
+where the alert fires in the ICU workflow"). Once the user picks Stop, do not
+ask again this session.

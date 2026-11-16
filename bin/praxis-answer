@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# praxis-answer — compute an aggregate answer through the praxis metric library.
+# Thin wrapper so skills never write metric code. See src/praxis/answer.py.
+set -euo pipefail
+PRAXIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+unset VIRTUAL_ENV
+exec uv run --quiet --project "$PRAXIS_DIR" praxis-answer "$@"

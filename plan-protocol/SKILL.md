@@ -1,12 +1,16 @@
 ---
 name: plan-protocol
-version: 1.0.0
+version: 1.1.0
 description: |
   Regulatory expert. Takes a research idea from plan-pi-review through to a
   submittable IRB protocol for an investigator-sponsored study. Makes the
   threshold determinations, builds the data provenance ledger, drafts the
   protocol, audits it against the approval criteria, and locks the approved
   scope into an assertion the pipeline can check.
+  Takes an effort level: low (default: the threshold determinations only, then
+  asks whether to go further), medium (determinations, pathway and provenance
+  ledger, no draft) or high (the full protocol). Only high drafts a
+  submittable protocol or writes the scope lock.
 allowed-tools:
   - Bash
   - Read
@@ -129,6 +133,29 @@ Do NOT proceed without all four. Fact 4 is the one that gets skipped, and it is
 the one that decides whether Dimension 2 applies at all.
 
 ---
+
+## Step 0.1 - Effort level
+
+| Level | Shape |
+|-------|-------|
+| **low** (default) | Steps 0-1: the threshold determinations, each with its confidence. No draft, no scope lock. |
+| **medium** | Steps 0-2: determinations, pathway and waivers, provenance ledger and minimum necessary. Section outline, no draft. |
+| **high** | Steps 0-9 as written (DRAFT, AUDIT or AMEND mode). Unchanged. |
+
+Set it from the user's words: "low effort", "quick look", "first pass",
+"rough" mean **low**; "medium", "one pass", "before we build" mean **medium**;
+"rigorous", "full review", "for the paper", "before submission" mean
+**high**. No level stated means **low**: do not ask up front. Start low, and
+ask about more effort after the result, when the user can see what a deeper
+pass would add. A level the user stated holds for the session.
+
+**At every level:** Step 0 runs in full (update check, learnings, reading the
+context), and the definitions, thresholds and checks in this file are the
+same. Effort changes how much is scored and reported, never what counts as a
+finding. **Hard rule: low and medium never issue SUBMIT, never draft a protocol meant for submission, and never write the scope lock (Step 7).** A data pull already made outside an authority is reported at every level (the Step 8 HOLD rule).
+
+At **low** or **medium**, run Step 1 (and at medium, Steps 1.5 and 2), then follow that level's section at the
+end of this file. At **high**, continue here unchanged.
 
 ## Step 1 - Threshold determinations
 
@@ -1209,3 +1236,44 @@ IRBs increasingly expect to see named - live in
 Read it when you need to cite a provision precisely. Do not quote a citation
 from memory into a regulatory document, and do not treat the index as current
 without checking - it is a pointer to the rule, not the rule.
+
+---
+
+## Low effort - threshold determinations
+
+Report each Step 1 determination in one line: the gate, your answer, its
+confidence, and who closes it if you cannot (the IRB, the privacy office, the
+FDA). Then one line naming the likely pathway and the facts that would
+change it. The verdict is **DETERMINE** if a gate is open, else none, marked
+*(low: never SUBMIT)*. No draft, no ledger, no scope lock. If data was already pulled or
+moved without coverage, say so first, as in Step 8.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the determinations stand.
+- **Medium**: pathway, waivers and the provenance ledger.
+- **High**: the full protocol, audit, scope lock and verdict.
+
+Name in each option what it would add for *this* project (for example "drafts
+the waiver of consent from this ledger"). Once the user picks Stop, do not ask
+again this session.
+
+## Medium effort - pathway and ledger
+
+After Steps 1, 1.5 and 2, report the determinations, the pathway with each
+waiver it needs and the findings that support it, and the provenance ledger
+as a table. Give a section outline for the protocol (headings, one line
+each), not the draft. Surface open gates with AskUserQuestion, at most two.
+The verdict is **DETERMINE**, **HOLD** or **REVISE**, marked *(medium: never
+SUBMIT)*.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the medium result stands.
+- **High**: the full protocol drafted from this ledger, then audited and locked.
+
+Name in each option what it would add for *this* project (for example "drafts
+the waiver of consent from this ledger"). Once the user picks Stop, do not ask
+again this session.

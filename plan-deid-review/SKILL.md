@@ -1,11 +1,14 @@
 ---
 name: plan-deid-review
-version: 1.0.0
+version: 1.1.0
 description: |
   De-identification and disclosure-risk audit. Inventories every surface an
   identifier can survive on, checks the removal method, verifies the checks
   themselves, and issues a RELEASE / HOLD / REWORK verdict before data crosses
   a boundary.
+  Takes an effort level: low (default: the surface inventory and blockers,
+  then asks whether to go further), medium (all six dimensions in one pass) or
+  high (the full audit). Only high can issue RELEASE.
 allowed-tools:
   - Bash
   - Read
@@ -59,6 +62,29 @@ echo "LEARNINGS: $_LEARN_COUNT entries loaded"
 
 If count > 0, read the learnings file and apply any of type `deid-pitfall` or
 `user-stated`.
+
+## Step 0.1 — Effort level
+
+| Level | Shape |
+|-------|-------|
+| **low** (default) | Steps 0-1.5 (boundary and surface inventory), blockers only. No scores. Verdict at most HOLD. |
+| **medium** | Steps 0-1.5, all six dimensions scored in one table. Verdict HOLD or REWORK. |
+| **high** | Steps 0-5 as written. Unchanged. The only level that can issue **RELEASE**. |
+
+Set it from the user's words: "low effort", "quick look", "first pass",
+"rough" mean **low**; "medium", "one pass", "before we build" mean **medium**;
+"rigorous", "full review", "for the paper", "before submission" mean
+**high**. No level stated means **low**: do not ask up front. Start low, and
+ask about more effort after the result, when the user can see what a deeper
+pass would add. A level the user stated holds for the session.
+
+**At every level:** Step 0 runs in full (update check, learnings, reading the
+context), and the definitions, thresholds and checks in this file are the
+same. Effort changes how much is scored and reported, never what counts as a
+finding. **Hard rule: low and medium never issue RELEASE**, whatever the scores. Data crosses a boundary only after a high review. A check that inspects nothing is REWORK at every level.
+
+At **low** or **medium**, run Steps 1 and 1.5 (the boundary and the full identifier surface inventory), then follow that level's section at the
+end of this file. At **high**, continue here unchanged.
 
 ## Step 1 — Establish the boundary
 
@@ -300,3 +326,44 @@ you will re-commit on the next batch.
 Before finishing, propose any `deid-pitfall` learnings this review surfaced, and
 offer to persist them via `/learn add`. Format-specific traps compound: the next
 project on the same vendor export should start where this one ended.
+
+---
+
+## Low effort — inventory and blockers
+
+Report the boundary (Step 1) in one line and the surface inventory (Step 1.5)
+as a compact table: surface, how it is protected, *unchecked* where nothing
+covers it. Then list blockers only: unchecked surfaces, vacuous checks,
+anything that makes this REWORK. No scores. The verdict is **HOLD** (or
+**REWORK** if a blocker was found), marked *(low: never RELEASE)*. Never
+write RELEASE at low effort, even when nothing was found: a low pass has not
+proven the checks fire.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): HOLD stands; nothing is released.
+- **Medium**: every dimension scored.
+- **High**: the full audit, the only route to RELEASE.
+
+Name in each option what it would add for *this* project (for example "tests
+that the free-text scrubber fails on a planted MRN"). Once the user picks
+Stop, do not ask again this session.
+
+## Medium effort — one-pass review
+
+After Step 1.5, score Dimensions 1-6 in one pass as a single table (score,
+one line of evidence, the fix). Surface blockers at confidence ≥ 8 with
+AskUserQuestion, at most two. The verdict is **HOLD** or **REWORK**, marked
+*(medium: never RELEASE)*. If every dimension would meet the RELEASE bar,
+say so and say that a high review is what issues it.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): HOLD stands; nothing is released.
+- **High**: the full audit, the only route to RELEASE.
+
+Name in each option what it would add for *this* project (for example "tests
+that the free-text scrubber fails on a planted MRN"). Once the user picks
+Stop, do not ask again this session.

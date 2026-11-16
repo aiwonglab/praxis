@@ -39,6 +39,7 @@ praxis/
 ├── README.md              # project overview
 ├── bin/
 │   ├── praxis-config      # read/write ~/.praxis/config.yaml
+│   ├── praxis-answer      # run a spec through the metric library (effort levels)
 │   ├── praxis-learn       # per-project learnings storage (JSONL)
 │   └── praxis-update-check # periodic version check (called by skill preambles)
 ├── plan-pi-review/
@@ -63,10 +64,24 @@ praxis/
 │   └── SKILL.md           # upgrade praxis to latest version
 ├── scripts/
 │   └── setup.sh           # environment setup (placeholder)
+├── tests/                 # pytest: metric library + skill invariants
 └── src/
     └── praxis/
-        └── __init__.py    # package root
+        ├── __init__.py    # package root
+        ├── config.py      # reads ~/.praxis/config.yaml
+        ├── definitions.py # canonical definitions + concept catalog
+        ├── datasets.py    # registry, cohort SQL (DuckDB/BigQuery), guards
+        ├── metrics.py     # the one metric code path
+        ├── disclosure.py  # small-cell suppression + release refusal
+        ├── answer.py      # Spec -> releasable result; praxis-answer CLI
+        ├── learnings.py   # candidate learnings from a run (never persists)
+        ├── notebook.py    # renders the one answer notebook
+        └── templates/answer_notebook.py  # the template, every effort level
 ```
+
+Effort levels in `/plan-pi-review` (low / medium / high) all compute numbers
+through `src/praxis/`. A definition changes only by a new version in
+`definitions.py`, never inline in a skill or notebook.
 
 ## Data discipline
 

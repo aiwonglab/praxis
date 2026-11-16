@@ -1,6 +1,6 @@
 ---
 name: plan-ds-review
-version: 1.0.0
+version: 1.1.0
 description: |
   Data pipeline, harmonization, statistics and reproducibility audit from a
   biostatistician's seat. Catches the errors that produce publishable but wrong
@@ -8,6 +8,9 @@ description: |
   coercion, and statistical misuse. Run after plan-pi-review, once the question
   is settled and what remains is whether the data and methods can answer it
   correctly.
+  Takes an effort level: low (default: the top findings only, then asks
+  whether to go further), medium (all seven dimensions in one pass) or high
+  (the full audit).
 allowed-tools:
   - Bash
   - Read
@@ -77,6 +80,29 @@ directory. If insufficient, ask the user:
 5. Is there an existing pipeline, or starting from scratch?
 
 Do NOT proceed until the data landscape is clear.
+
+## Step 0.1 — Effort level
+
+| Level | Shape |
+|-------|-------|
+| **low** (default) | Steps 0-1, a silent pass over all seven dimensions, top findings only. No scores, no verdict. |
+| **medium** | Steps 0-1, all seven dimensions scored in one table, one-line verdict. |
+| **high** | Steps 0-5 as written. Unchanged. |
+
+Set it from the user's words: "low effort", "quick look", "first pass",
+"rough" mean **low**; "medium", "one pass", "before we build" mean **medium**;
+"rigorous", "full review", "for the paper", "before submission" mean
+**high**. No level stated means **low**: do not ask up front. Start low, and
+ask about more effort after the result, when the user can see what a deeper
+pass would add. A level the user stated holds for the session.
+
+**At every level:** Step 0 runs in full (update check, learnings, reading the
+context), and the definitions, thresholds and checks in this file are the
+same. Effort changes how much is scored and reported, never what counts as a
+finding. Leakage and cohort-definition findings at confidence ≥ 8 are always reported, at any level.
+
+At **low** or **medium**, run Step 1, then follow that level's section at the
+end of this file. At **high**, continue here unchanged.
 
 ## Step 1 — Classify the data scenario
 
@@ -558,3 +584,43 @@ quality, false positive rates).
 **Biggest threat**: ...
 **Next action**: ...
 ```
+
+---
+
+## Low effort — top findings
+
+After Step 1, make one silent pass over Dimensions 1-7. Report only findings
+at confidence ≥ 8, at most five, most consequential first, one line each:
+the dimension, what is wrong, the fix. Leakage, immortal time and cohort
+selection come first when present. No scores and no verdict: a low pass has
+not looked hard enough to say SOUND. If nothing reaches 8, say "no
+high-confidence problems in a first pass", which is not the same as SOUND.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the findings stand.
+- **Medium**: every dimension scored, with a verdict.
+- **High**: the full audit, data flow diagram and structured summary.
+
+Name in each option what it would add for *this* project (for example "scores
+leakage and the 3 cohort joins in full"). Once the user picks Stop, do not ask
+again this session.
+
+## Medium effort — one-pass review
+
+After Step 1, score Dimensions 1-7 in one pass as a single table (score, one
+line of evidence, the fix). Surface findings at confidence ≥ 8 with
+AskUserQuestion, at most two. Skip the data flow diagram (Step 3). Give the
+Step 4 verdict on one line, marked *(medium)*: SOUND at medium means sound
+on a one-pass read, and is not a substitute for high before a paper.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the medium verdict stands.
+- **High**: the full audit, with this table as its starting point.
+
+Name in each option what it would add for *this* project (for example "scores
+leakage and the 3 cohort joins in full"). Once the user picks Stop, do not ask
+again this session.

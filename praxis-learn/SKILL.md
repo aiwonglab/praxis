@@ -197,7 +197,7 @@ real time?** If the answer is no, don't store it. If yes, store it now — the
 moment it is obvious to you is exactly when you will forget to.
 
 Debugging an empty store: `praxis-learn` writes to
-`${PRAXIS_STATE_DIR:-$HOME/.praxis}/projects/<slug>/praxis-learnings.jsonl`, where slug
+`${PRAXIS_STATE_DIR:-$HOME/.praxis}/projects/<slug>/learnings.jsonl`, where slug
 comes from the git remote basename, falling back to the working-directory name.
 If a project has no remote and is run from different directories, learnings will
 scatter across slugs. Set `PRAXIS_PROJECT` explicitly for such projects.

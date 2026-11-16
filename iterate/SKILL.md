@@ -1,6 +1,6 @@
 ---
 name: iterate
-version: 1.0.0
+version: 1.1.0
 description: |
   Advance the research process. Detects what changed, checks for scope drift,
   routes to the right review skills, captures learnings, and logs progress.
@@ -173,7 +173,7 @@ Based on what changed (Step 2), decide which reviews to run:
 | New use of an existing cohort — second paper, grant prelim data, hand-off to a clinical service | plan-protocol (Step 2d only) | Approved data, unapproved purpose |
 | Data about to cross an institutional boundary | plan-deid-review, then plan-protocol Dim 5 | Disclosure surface plus the authority for the transfer |
 | Fix applied to prior finding | Re-score affected dimension only | Verify fix resolved the issue |
-| Iteration 1 (new plan) | plan-pi-review (full) | First-pass strategic review |
+| Iteration 1 (new plan) | plan-pi-review (all of Steps 0.5-5 at the chosen level) | First-pass strategic review |
 
 **Routing rules:**
 - If multiple reviews needed, run in dependency order: PI → protocol → DS → AI → Clinical
@@ -181,6 +181,22 @@ Based on what changed (Step 2), decide which reviews to run:
   stop and surface the blocker — don't run downstream reviews
 - For "fix applied" changes, don't re-run the entire review — re-score only the
   affected dimension(s) and update the finding's status
+
+**Effort level.** Every routed review takes low / medium / high (each
+review's Step 0.1). Use the level the user stated for this session; with none
+stated, run every routed review at **low**. Do not ask up front. After the
+reviews, ask once with AskUserQuestion, multi-select: which reviews to rerun
+at medium or high, each option naming what it would add (none selected =
+stop). Exceptions, whatever the level:
+- At low there is no verdict. Treat any confidence ≥ 8 finding that would
+  produce a blocking verdict (REDESIGN, REFRAME, REWORK, DETERMINE, HOLD) as
+  a blocker under the rule above.
+- plan-deid-review issues RELEASE only at high, and plan-protocol issues
+  SUBMIT and writes the scope lock only at high. When data is about to cross
+  a boundary, or a protocol is about to go in, say that high is required and
+  offer it first.
+- "Fix applied" re-scores keep the level of the review that raised the
+  finding.
 
 **Invoking reviews** (composable skill convention from CLAUDE.md):
 Read the target review's SKILL.md. Skip Step 0 (update check and context gathering

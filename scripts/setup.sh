@@ -45,6 +45,12 @@ fi
 # ─── 2. Check Python environment ────────────────────────────────────
 if command -v uv >/dev/null 2>&1; then
   echo "  uv: $(uv --version)"
+  # praxis-answer (effort levels in /plan-pi-review) needs the praxis env.
+  if (unset VIRTUAL_ENV; uv sync --quiet --project "$PRAXIS_DIR"); then
+    echo "  python env: synced (praxis-answer ready)"
+  else
+    echo "  warning: uv sync failed — praxis-answer will not run until it succeeds"
+  fi
 else
   echo "  warning: uv not found — install it: https://docs.astral.sh/uv/"
 fi

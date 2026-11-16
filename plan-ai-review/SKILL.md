@@ -1,6 +1,6 @@
 ---
 name: plan-ai-review
-version: 1.0.0
+version: 1.1.0
 description: |
   Model selection, fairness, calibration, explainability and generalizability
   audit for clinical AI. Biased toward simplicity and interpretability, and
@@ -8,6 +8,9 @@ description: |
   plan-ds-review when the project involves machine learning or clinical NLP.
   Descriptive studies using standard statistics can skip to
   plan-clinical-review.
+  Takes an effort level: low (default: the top findings only, then asks
+  whether to go further), medium (all seven dimensions in one pass) or high
+  (the full audit).
 allowed-tools:
   - Bash
   - Read
@@ -83,6 +86,29 @@ ask the user:
 4. What population does this model serve? Are there known demographic disparities in the condition?
 
 Do NOT proceed until the modeling context is clear.
+
+## Step 0.1 — Effort level
+
+| Level | Shape |
+|-------|-------|
+| **low** (default) | Steps 0-1, a silent pass over all seven dimensions, top findings only. No scores, no verdict. |
+| **medium** | Steps 0-1, all seven dimensions scored in one table, one-line verdict. |
+| **high** | Steps 0-5 as written. Unchanged. |
+
+Set it from the user's words: "low effort", "quick look", "first pass",
+"rough" mean **low**; "medium", "one pass", "before we build" mean **medium**;
+"rigorous", "full review", "for the paper", "before submission" mean
+**high**. No level stated means **low**: do not ask up front. Start low, and
+ask about more effort after the result, when the user can see what a deeper
+pass would add. A level the user stated holds for the session.
+
+**At every level:** Step 0 runs in full (update check, learnings, reading the
+context), and the definitions, thresholds and checks in this file are the
+same. Effort changes how much is scored and reported, never what counts as a
+finding. Fairness and evaluation findings at confidence ≥ 8, and any case where a simpler model would do, are always reported, at any level.
+
+At **low** or **medium**, run Step 1, then follow that level's section at the
+end of this file. At **high**, continue here unchanged.
 
 ## Step 1 — Classify the modeling scenario
 
@@ -508,3 +534,43 @@ After scoring, synthesize into a risk map:
 **Simplification opportunity**: ...
 **Next action**: ...
 ```
+
+---
+
+## Low effort — top findings
+
+After Step 1, make one silent pass over Dimensions 1-7. Report only findings
+at confidence ≥ 8, at most five, most consequential first, one line each:
+the dimension, what is wrong, the fix. Say first if a simpler model would do
+(the SIMPLIFY question), then fairness, then evaluation. No scores and no
+verdict. If nothing reaches 8, say "no high-confidence problems in a first
+pass", which is not the same as SOUND.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the findings stand.
+- **Medium**: every dimension scored, with a verdict.
+- **High**: the full audit, model risk map and structured summary.
+
+Name in each option what it would add for *this* project (for example "scores
+calibration and subgroup fairness for the 3 sites"). Once the user picks Stop,
+do not ask again this session.
+
+## Medium effort — one-pass review
+
+After Step 1, score Dimensions 1-7 in one pass as a single table (score, one
+line of evidence, the fix). Surface findings at confidence ≥ 8 with
+AskUserQuestion, at most two. Skip the model risk map (Step 3). Give the
+Step 4 verdict on one line, marked *(medium)*: SOUND at medium is a one-pass
+read, not a substitute for high before deployment or a paper.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select,
+in the same round as any proposed learnings:
+
+- **Stop here** (first option): the medium verdict stands.
+- **High**: the full audit, with this table as its starting point.
+
+Name in each option what it would add for *this* project (for example "scores
+calibration and subgroup fairness for the 3 sites"). Once the user picks Stop,
+do not ask again this session.
