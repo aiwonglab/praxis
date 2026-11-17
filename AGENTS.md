@@ -28,18 +28,36 @@ Constraints:
 | `/plan-ds-review` | **Active** | Data pipeline, harmonization, stats & reproducibility audit. |
 | `/plan-ai-review` | **Active** | Model selection, fairness, explainability, generalizability audit. |
 | `/plan-clinical-review` | **Active** | Bedside validity, safety, actionability, workflow integration audit. |
+| `/plan-deid-review` | **Active** | De-identification & disclosure-risk audit. Run before data crosses any boundary. |
+| `/plan-protocol` | **Active** | Regulatory audit and IRB protocol drafting for investigator-sponsored studies. Idea to submittable protocol, plus a scope lock the pipeline asserts against. |
 
 ## Review chain protocol
 
 ### Execution order
 
 ```
-plan-pi-review → plan-ds-review → plan-ai-review → plan-clinical-review
-"Right question?"  "Right data?"     "Right model?"   "Right at bedside?"
+plan-pi-review → plan-protocol → plan-ds-review → plan-ai-review → plan-clinical-review
+"Right question?"  "Allowed to    "Right data?"     "Right model?"   "Right at bedside?"
+                    ask it?"
+
+plan-deid-review — runs on the data-movement axis, not this chain
+"Safe to move?"
 ```
 
-**Sequential within a thread**: PI must pass before DS runs. DS must pass before
-AI runs. Clinical review runs last.
+`/plan-protocol` sits between the science and the data because that is the only
+place it can sit. A protocol can be revised after the science settles; a pull
+cannot be retroactively authorized. It runs once PI review returns GO or ITERATE,
+and again whenever the cohort, window, site list, element list, or intended *use*
+changes.
+
+`/plan-deid-review` is not a stage in the chain. It gates *movement* rather than
+progress: run it whenever data crosses a boundary, and re-run it on every batch,
+because the method that was complete for the last export is only a hypothesis
+about the next one. `/plan-protocol` Step 2a hands its egress hop to it directly.
+
+**Sequential within a thread**: PI must pass before protocol drafting. The
+protocol must reach SUBMIT or a documented determination before DS runs on
+institutional data. DS must pass before AI runs. Clinical review runs last.
 
 **Parallel across independent threads**: Threads with no data/outcome dependencies
 can run their review chains concurrently.
@@ -69,13 +87,23 @@ Thread 3 (LLM extraction) ──────────→ Thread 4 (multimodal
 - Research-enabling tools (extraction, infrastructure): clinical review uses
   the "Monday morning" test instead of the 3 AM test
 - If PI review says PAUSE: stop. Resolve the blocker before downstream reviews.
+- `/plan-protocol` may be skipped only for work entirely on public de-identified
+  data under an existing DUA — and even then run Step 1 Gate B, because the DUA
+  is what binds you, and Step 2d, because grant preliminary data and operational
+  hand-offs are uses the DUA may not cover.
+- If plan-protocol says HOLD because data was already pulled outside an approved
+  scope: stop and route it through the institution. That is not a finding to fix
+  quietly.
+- `/plan-deid-review` has no skip rule. Public-data-only work still has an
+  identifier surface — figures, filenames, and notebook outputs all leave.
 
 ## Future skills
 
 | Skill | Purpose | When to build |
 |-------|---------|---------------|
+| `/plan-irb-review` | Reviewer-side audit of a submitted or approved protocol and its ongoing conduct — the late-stage counterpart to `/plan-protocol`, the way `/review` is the late-stage counterpart to a plan review. Reads the protocol, the pipeline, and the deviations log together. | When the first protocol has been approved and the cohort is being built against it |
 | `/plan-program-review` | Multi-project coherence review — do the threads form a fundable program (R01, K-award)? Evaluate narrative arc, dependency sequencing, and portfolio balance. | When preparing a grant application or annual review |
-| `/office-hours` | Research hypothesis brainstorm — pre-PI-review ideation for new threads | When exploring whether a question is worth pursuing |
+| `/praxis-office-hours` | Research hypothesis brainstorm — pre-PI-review ideation for new threads | When exploring whether a question is worth pursuing |
 
 ## Long-term learning: MD-based project memory
 

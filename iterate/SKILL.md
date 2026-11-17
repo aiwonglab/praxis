@@ -1,6 +1,6 @@
 ---
 name: iterate
-version: 1.0.0
+version: 1.2.0
 description: |
   Advance the research process. Detects what changed, checks for scope drift,
   routes to the right review skills, captures learnings, and logs progress.
@@ -140,6 +140,16 @@ Compare current state against the plan. Look for:
 - New operationalizations introduced
 - Inclusion/exclusion criteria altered
 
+**Regulatory drift** — the work moved outside the approved protocol:
+- Cohort, date window, site list, or data elements now exceed `protocol.lock.yaml`
+- A new use of an existing cohort that the objectives section does not name
+- A new person with data access who is not on the personnel list
+
+Regulatory drift is not the same as scope creep. Scope creep costs you focus;
+regulatory drift is a protocol deviation. If a scope-lock assertion fired, route
+to `/plan-protocol` and say plainly whether the answer is an amendment or a
+report — never a loosened constant.
+
 If drift is detected, surface the top 2-3 items via `AskUserQuestion`. Each
 question should include what the plan says, what the current state is, and whether
 the change is intentional.
@@ -159,15 +169,34 @@ Based on what changed (Step 2), decide which reviews to run:
 | Model or features | plan-ai-review | Selection, fairness, evaluation |
 | Results are in | plan-clinical-review | Face validity, actionability |
 | Definition changed | plan-pi-review (Step 1.5 only) | Definition audit |
+| Cohort, window, site, or data element changed | plan-protocol (Step 2, then 7) | The approved scope may no longer cover the pull |
+| New use of an existing cohort — second paper, grant prelim data, hand-off to a clinical service | plan-protocol (Step 2d only) | Approved data, unapproved purpose |
+| Data about to cross an institutional boundary | plan-deid-review, then plan-protocol Dim 5 | Disclosure surface plus the authority for the transfer |
 | Fix applied to prior finding | Re-score affected dimension only | Verify fix resolved the issue |
-| Iteration 1 (new plan) | plan-pi-review (full) | First-pass strategic review |
+| Iteration 1 (new plan) | plan-pi-review (all of Steps 0.5-5 at the chosen level) | First-pass strategic review |
 
 **Routing rules:**
-- If multiple reviews needed, run in dependency order: PI → DS → AI → Clinical
+- If multiple reviews needed, run in dependency order: PI → protocol → DS → AI → Clinical
 - If a review gives a blocking verdict (REDESIGN, PIVOT, PAUSE, REFRAME, PREMATURE),
   stop and surface the blocker — don't run downstream reviews
 - For "fix applied" changes, don't re-run the entire review — re-score only the
   affected dimension(s) and update the finding's status
+
+**Effort level.** Every routed review takes low / medium / high (each
+review's Step 0.1). Use the level the user stated for this session; with none
+stated, run every routed review at **low**. Do not ask up front. After the
+reviews, ask once with AskUserQuestion, multi-select: which reviews to rerun
+at medium or high, each option naming what it would add (none selected =
+stop). Exceptions, whatever the level:
+- At low there is no verdict. Treat any confidence ≥ 8 finding that would
+  produce a blocking verdict (REDESIGN, REFRAME, REWORK, DETERMINE, HOLD) as
+  a blocker under the rule above.
+- plan-deid-review issues RELEASE only at high, and plan-protocol issues
+  SUBMIT and writes the scope lock only at high. When data is about to cross
+  a boundary, or a protocol is about to go in, say that high is required and
+  offer it first.
+- "Fix applied" re-scores keep the level of the review that raised the
+  finding.
 
 **Invoking reviews** (composable skill convention from CLAUDE.md):
 Read the target review's SKILL.md. Skip Step 0 (update check and context gathering
@@ -187,14 +216,21 @@ If no review is needed (e.g., only documentation changes), skip to Step 4.5.
 ## Step 4.5 — Build & verify
 
 If implementation artifacts changed (code in `src/`, pipeline scripts, notebooks),
-run the project's build checks. Read CLAUDE.md for the exact commands. Default:
+run the project's build checks. Read CLAUDE.md for the exact commands. Format and
+lint **only the Python files changed in this iteration** (from Step 2), never a
+whole folder: untouched files can hold someone's uncommitted edits, and a
+repo-wide format buries the real diff. Default:
 
 ```bash
-uv run ruff format . 2>&1 | tail -5
-uv run ruff check . --fix 2>&1 | tail -10
+_PY=$(git diff --name-only --diff-filter=d HEAD -- '*.py'; git ls-files --others --exclude-standard -- '*.py')
+[ -n "$_PY" ] && echo "$_PY" | xargs -d '\n' uv run ruff format 2>&1 | tail -5
+[ -n "$_PY" ] && echo "$_PY" | xargs -d '\n' uv run ruff check --fix 2>&1 | tail -10
 uv run pyright 2>&1 | tail -10
 uv run pytest 2>&1 | tail -20
 ```
+
+Read each result for failure (`Traceback`, `error`, `FAILED`) before reading it
+for success: a tail can show a pass line under an earlier failure.
 
 **Routing:** Only run checks relevant to what changed:
 - Code formatting/linting: always if any `.py` file changed

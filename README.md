@@ -19,11 +19,11 @@ collaborator. It's meant to make your time with them more effective.
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install praxis: run **`git clone https://github.com/aiwonglab/praxis.git ~/.claude/skills/praxis && cd ~/.claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to CLAUDE.md that lists the available skills: /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review, and notes to read ETHOS.md for foundational principles. Then ask the user if they also want to add praxis to the current project so collaborators get it.
+> Install praxis: run **`git clone https://github.com/aiwonglab/praxis.git ~/.claude/skills/praxis && cd ~/.claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to CLAUDE.md that lists the available skills: /plan-pi-review, /plan-protocol, /plan-ds-review, /plan-ai-review, /plan-clinical-review, /plan-deid-review, /praxis-learn, and notes to read ETHOS.md for foundational principles. Then ask the user if they also want to add praxis to the current project so collaborators get it.
 
 ### Step 2: Add to your repo so collaborators get it (optional)
 
-> Add praxis to this project: run **`cp -Rf ~/.claude/skills/praxis .claude/skills/praxis && rm -rf .claude/skills/praxis/.git && cd .claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to this project's CLAUDE.md that lists the available skills: /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review, and tells Claude that if praxis skills aren't working, run `cd .claude/skills/praxis && bash scripts/setup.sh` to re-link them.
+> Add praxis to this project: run **`cp -Rf ~/.claude/skills/praxis .claude/skills/praxis && rm -rf .claude/skills/praxis/.git && cd .claude/skills/praxis && bash scripts/setup.sh`** then add a "praxis" section to this project's CLAUDE.md that lists the available skills: /plan-pi-review, /plan-protocol, /plan-ds-review, /plan-ai-review, /plan-clinical-review, /plan-deid-review, /praxis-learn, and tells Claude that if praxis skills aren't working, run `cd .claude/skills/praxis && bash scripts/setup.sh` to re-link them.
 
 Real files get committed to your repo (not a submodule), so `git clone` just works. Everything lives inside `.claude/`. Nothing touches your PATH or runs in the background.
 
@@ -106,6 +106,9 @@ These are the current defaults, not doctrine. They'll evolve as the work demands
 | `/plan-ds-review` | Data pipeline and statistical rigor audit. Dataset-specific probes for MIMIC-IV, eICU, waveforms, DICOM. |
 | `/plan-ai-review` | Model and fairness audit. Evaluates selection, methodology, fairness, explainability, deployment readiness. |
 | `/plan-clinical-review` | Bedside validity and safety audit. Clinical actionability, workflow integration, population fit. |
+| `/plan-deid-review` | De-identification and disclosure-risk audit. Inventories identifier surfaces, verifies the checks themselves. RELEASE / HOLD / REWORK. |
+| `/plan-protocol` | Regulatory expert. Idea to IRB protocol for investigator-sponsored studies: threshold determinations, waiver findings, minimum-necessary element table, and a scope lock the pipeline asserts against. SUBMIT / REVISE / DETERMINE / HOLD. |
+| `/praxis-learn` | View, add, search, and prune project learnings that feed the review skills. |
 | Data discipline | No hardcoded paths. No PHI in logs. Reproducibility enforced by convention and tooling. |
 | Dev workflow | Inherited from gstack — `/review`, `/qa`, `/ship`, `/investigate`, `/retro`, and more. |
 
@@ -118,6 +121,7 @@ Our ethos and principles are in [ETHOS.md](ETHOS.md). The short version:
 - **Novel methods on reproducible foundations** — boring foundations, clear novelty
 - **Don't reinvent the wheel** — consensus definitions, existing phenotypes, published methods first
 - **Bring cleaner starting points** — to collaborators, to the next study, to the field
+- **Guardrails over warnings** — encode findings as assertions, not prose; prove each check fires
 - **Compound internally, share when ready** — fast iteration within studies, share the artifact when it's ready
 
 ## Disclaimer

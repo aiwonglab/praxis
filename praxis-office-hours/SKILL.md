@@ -1,5 +1,5 @@
 ---
-name: office-hours
+name: praxis-office-hours
 version: 1.0.0
 description: |
   Research formulation — go from a half-formed idea to a structured PLAN.md
@@ -17,7 +17,7 @@ allowed-tools:
   - WebFetch
 ---
 
-# /office-hours
+# /praxis-office-hours
 
 Research formulation — PI office hours for turning ideas into reviewable plans.
 
@@ -250,7 +250,7 @@ If C: invoke `plan-pi-review/SKILL.md` using the composable skill convention
 
 ## When to suggest office-hours
 
-Other skills should suggest `/office-hours` when:
+Other skills should suggest `/praxis-office-hours` when:
 - `/plan-pi-review` Step 0 finds no plan file
 - `/iterate` iteration 1 finds no plan file
 - The PI's answers during any review suggest the question isn't fully formed

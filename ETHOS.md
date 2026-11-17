@@ -66,6 +66,32 @@ gap we're filling.
 entity type. Writing a new MIMIC-IV sepsis cohort when three published ones
 exist. Skipping the search because "our approach is different."
 
+### Guardrails over warnings
+
+A finding that stays prose is a finding you will re-commit. When a review names a
+real risk, encode it where it will fire: an assertion, a refusal path, a test, a
+logged invariant. A docstring describing the hazard, a `# TODO: validate`, or a
+constant with a cautionary name are not guardrails — none of them fail when
+violated.
+
+Two corollaries, both learned the expensive way:
+
+**Prefer refusing to guessing.** Code that cannot corroborate a value should
+raise, not emit. A failed file costs an hour. A plausible wrong number in a
+results table costs the paper.
+
+**A check that has never failed is unverified.** Prove each guard fires by
+running it against deliberately broken input — a truncated file, a renamed
+column, an empty result set. Until then you have tested that clean input passes,
+which is not the same thing. Watch in particular for checks that pass over
+*nothing*: a validation loop that silently skips missing inputs reports success
+forever.
+
+*Anti-patterns:* A review finding at 9/10 confidence that produces no artifact.
+Loosening a threshold so a check goes green instead of diagnosing why it fired.
+"All checks passed" printed over an empty file list. Tests that only cover the
+happy path for anything safety- or disclosure-relevant.
+
 ### Portable code, honest validation
 
 Separate data access from analysis logic so the code travels between datasets

@@ -45,6 +45,12 @@ fi
 # ─── 2. Check Python environment ────────────────────────────────────
 if command -v uv >/dev/null 2>&1; then
   echo "  uv: $(uv --version)"
+  # praxis-answer (effort levels in /plan-pi-review) needs the praxis env.
+  if (unset VIRTUAL_ENV; uv sync --quiet --project "$PRAXIS_DIR"); then
+    echo "  python env: synced (praxis-answer ready)"
+  else
+    echo "  warning: uv sync failed — praxis-answer will not run until it succeeds"
+  fi
 else
   echo "  warning: uv not found — install it: https://docs.astral.sh/uv/"
 fi
@@ -64,6 +70,7 @@ echo "Add this to your project's CLAUDE.md:"
 echo ""
 echo '  ## praxis'
 echo '  Clinical research skills from praxis. Available skills:'
-echo '  /plan-pi-review, /plan-ds-review, /plan-ai-review, /plan-clinical-review,'
-echo '  /office-hours, /iterate, /learn, /praxis-upgrade'
+echo '  /plan-pi-review, /plan-protocol, /plan-ds-review, /plan-ai-review,'
+echo '  /plan-clinical-review, /plan-deid-review, /praxis-office-hours,'
+echo '  /iterate, /praxis-learn, /praxis-upgrade'
 echo '  See ETHOS.md for foundational principles.'

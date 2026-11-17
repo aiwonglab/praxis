@@ -1,3 +1,25 @@
+---
+name: plan-pi-review
+version: 1.3.0
+description: |
+  Research strategy audit from a senior physician-scientist's seat. Challenges
+  the question itself before any implementation: is it worth answering, is the
+  data feasible, does the scope match the claim, are the definitions consensus
+  standards or invented. Scores seven dimensions and issues a verdict. Run this
+  first on any research plan, proposal, or idea, to catch the strategic errors
+  that are expensive to discover late. Takes an effort level: low (default:
+  for a question, first numbers in minutes; for a plan, the top findings; then
+  asks whether to go further), medium (a one-pass review; for a question, a
+  saved notebook) or high (the full audit).
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
+---
+
 # Plan PI Review — Research Strategy Audit
 
 ## Identity
@@ -40,31 +62,84 @@ echo "LEARNINGS: $_LEARN_COUNT entries loaded"
 ```
 If count > 0, read the learnings file. During dimensional scoring, apply relevant
 learnings (especially `definition-pitfall` and `user-stated` types) — see
-`learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
+`praxis-learn/SKILL.md` for the mapping. Flag any learning whose `valid_for` context
 doesn't match the current project.
 
+Next, set the effort level (Step 0.1). The update check and learnings load
+above run at every level. For a **question** at low or medium effort, the plan
+intake below does not apply: follow that level's path at the end of this file.
+For a **plan** at low or medium, run the plan intake below, then follow
+*Effort on a plan*. At **high** effort, continue here unchanged.
+
 Read any plan files in the working directory (look for `PLAN.md`, `plan-*.md`,
-`*.plan.md`, or files in `plans/`). If no plan file exists, offer `/office-hours`:
+`*.plan.md`, or files in `plans/`). If no plan file exists, ask the user:
 
-Use `AskUserQuestion`:
-"No plan file found. `/office-hours` helps you turn a research idea into a
-structured PLAN.md through six targeted questions — takes about 10 minutes
-and gives this review much sharper input."
-
-Options:
-- A) Run /office-hours first (recommended if the idea isn't fully formed)
-- B) Skip — I'll give you the basics now
-
-If B, ask the user for:
 1. The research question (one sentence)
 2. The proposed approach (2-3 sentences)
 3. The target dataset(s)
 4. The intended output (paper, tool, pilot, grant aim)
 
-If A, invoke `office-hours/SKILL.md` using the composable skill convention.
-When it completes and PLAN.md is written, return here and continue.
+At **high** effort only, ask that in one AskUserQuestion that also offers
+`/praxis-office-hours` first: "No plan file found. `/praxis-office-hours` turns
+a research idea into a structured PLAN.md through six targeted questions,
+about 10 minutes, and gives this review sharper input." Options: **Run
+/praxis-office-hours first** (if the idea isn't fully formed), **Give the
+basics now**. If the user picks office-hours, invoke
+`praxis-office-hours/SKILL.md` using the composable skill convention; when it
+completes and PLAN.md is written, return here and continue. At low and medium,
+never offer it up front; the close offers it instead (*Effort on a plan*).
 
-Do NOT proceed until you have a plan (from PLAN.md or from user answers).
+Do NOT proceed until you have a plan (from PLAN.md or from the four answers).
+
+## Step 0.1 — Effort level
+
+| Level | For | Shape |
+|-------|-----|-------|
+| **low** (default) | No level stated; demo, first look | Question: 0-1 questions, answer first, review after. Plan: top findings, no scores. Then ask about more effort. See *Low effort* and *Effort on a plan*. |
+| **medium** | Operations questions that will be acted on; a plan before building | Question: 2-3 questions, short review, full run, saved notebook. Plan: Dimensions 1-7 in one table. See *Medium effort* and *Effort on a plan*. |
+| **high** | Papers, grants, protocols | Steps 0.5-5 as written. Unchanged. |
+
+Set it from the user's words: "low effort", "demo mode", "quick answer",
+"rough", "ballpark" mean **low**; "medium", "for operations", "for the
+dashboard" mean **medium**; "rigorous", "full review", "for the paper" mean
+**high**. No level stated means **low**, for a question or a plan: do not
+ask up front. Start low and ask about more effort after the result (L5, or
+the close of *Effort on a plan*), when the user can see what a deeper pass
+would add.
+
+**Hard rule at every level:** numbers for any metric in the praxis library come
+from `praxis-answer`, which runs the one shared definitions library and metric
+code (`src/praxis/`). Effort changes how much is negotiated and how wide the
+scope is. It never changes a definition. If two levels give different numbers,
+the only allowed reason is scope (hospitals, time window, sampling), and the
+output says so; `scope.narrowed` in the result names it.
+
+## Step 0.5 — Bounded reconnaissance
+
+Before scoring, spend a bounded amount of effort establishing facts that
+Dimension 3 (Data Feasibility) would otherwise be guessing at. **Time-box it** —
+a handful of commands, not an implementation.
+
+This step exists because reviews are usually invoked mid-task, not in front of a
+blank page. When work is already in flight the cheapest facts are often already
+reachable, and scoring feasibility from speculation wastes the review.
+
+Run only probes that are cheap and decisive:
+
+- Does the file / table / endpoint parse at all? Open one and look.
+- Do the required variables exist, under the names the plan assumes?
+- How many rows, patients, events — order of magnitude only.
+- Is there an **independent artifact** that could validate the pipeline later?
+  (a rendered report, a signed document, a published summary table) Name it now;
+  it is the difference between "the code ran" and "the output is right".
+- For an undocumented format: does a native structured export already exist and
+  make the whole effort unnecessary? (*Don't reinvent the wheel*)
+
+Report what you learned in three or four lines, then let it move the scores. A
+recon that shifts a dimension by two points has paid for itself.
+
+**Do not let this become the work.** If a probe needs more than a few minutes or
+any real implementation, stop and record it as an open question for Dimension 3.
 
 ## Step 1 — Classify the research type
 
@@ -485,6 +560,43 @@ Deliver one of four verdicts:
 For ITERATE and PIVOT, name the specific dimensions and propose concrete fixes.
 For PAUSE, name the blocker and the action to unblock.
 
+## Step 4.5 — Findings to guardrails
+
+**Every finding at confidence ≥ 8 must name an artifact that will enforce it.**
+Not a paragraph. A thing that runs.
+
+This step exists because the characteristic failure of a good review is not
+missing the problem — it is naming the problem correctly, at high confidence,
+and then committing it anyway a few hours later. Prose does not survive contact
+with implementation. An assertion does.
+
+For each finding at 8+, fill in:
+
+| Finding | Confidence | Enforcing artifact | Lives in |
+|---------|-----------|-------------------|----------|
+| Constants generalised from n=4 same-day files | 9/10 | Read the value from the file; assert it against a plausible range; refuse on mismatch | parser module |
+| Cohort could silently empty on a column rename | 8/10 | Post-filter row-count assertion with expected order of magnitude | pipeline step |
+| Definition choice is load-bearing | 8/10 | Sensitivity analysis under the alternative, pre-registered | analysis plan |
+
+Acceptable artifacts, roughly in order of strength:
+
+1. **A refusal** — the code raises rather than emitting a value it cannot
+   corroborate. Strongest, because it cannot be ignored.
+2. **A test** — including a *negative* test proving the guard fires on bad input.
+   A check that has never failed is unverified.
+3. **A logged invariant** — printed every run, so drift is visible.
+4. **A config flag** — makes an implicit choice explicit and reviewable.
+5. **A pre-registered sensitivity analysis** — for definitional findings.
+
+If no artifact can be named, one of two things is true, and you must say which:
+the finding is weaker than 8, **or** the risk is being knowingly accepted. Write
+the acceptance down with the reason. Silent acceptance is how a 9/10 finding
+becomes a bug.
+
+**Warning signs that a "guardrail" is really still prose:** a docstring
+describing the risk, a comment saying `# TODO: validate`, a note in the plan, or
+a constant with a cautionary name. None of these fail when violated.
+
 ## Step 5 — Structured summary
 
 Output this block at the end:
@@ -507,10 +619,13 @@ Output this block at the end:
 | Collaboration readiness | X/10 | ... |
 
 **Key findings**:
-| Finding | Confidence | Status |
-|---------|-----------|--------|
-| [highest-confidence finding] | X/10 | [open / resolved / deferred] |
-| ... | ... | ... |
+| Finding | Confidence | Enforcing artifact | Status |
+|---------|-----------|-------------------|--------|
+| [highest-confidence finding] | X/10 | [assertion / test / refusal — or ACCEPTED] | [open / resolved / deferred] |
+| ... | ... | ... | ... |
+
+Findings at confidence ≥ 8 with an empty artifact column are not reportable —
+resolve them in Step 4.5 first.
 
 **Definition inventory**: [number] concepts defined, [number] using consensus,
   [number] with sensitivity analyses planned
@@ -518,3 +633,207 @@ Output this block at the end:
 **Biggest threat**: ...
 **Next action**: ...
 ```
+
+---
+
+## Effort on a plan (low and medium)
+
+For a plan file or a research proposal. The plan intake in Step 0 has run.
+
+**Low: top findings.** Make one silent pass over Step 1.5 (definitions) and
+Dimensions 1-7. Report only findings at confidence ≥ 8, at most five, most
+consequential first, one line each: the dimension, what is wrong, the fix.
+Invented definitions where a consensus one exists, and a scope that exceeds
+the claim, come first when present. No scores and no verdict. If nothing
+reaches 8, say "no high-confidence problems in a first pass", which is not
+the same as GO.
+
+**Medium: one-pass review.** Run Step 0.5 bounded to five minutes and Step
+1.5 for load-bearing definitions only. Score Dimensions 1-7 in one pass as a
+single table (score, one line of evidence, the fix), surface findings at
+confidence ≥ 8 with AskUserQuestion (at most two), and give the Step 4
+verdict on one line, marked *(medium)*. Skip Steps 3, 4.5 and 5.
+
+**Close: ask about more effort.** One AskUserQuestion call, single-select, in
+the same round as any proposed learnings: **Stop here** (first option),
+**Medium** (low only: every dimension scored, with a verdict), **High** (the
+full audit, with this pass as its starting point). Name in each option what
+it would add for this plan. Once the user picks Stop, do not ask again this
+session.
+
+When no plan file existed, or the findings show the question is not yet
+formed (no single question, no dataset, an unbounded scope), add a fourth
+option, **Formulate first**: run `/praxis-office-hours` to write a PLAN.md,
+then review that plan at the level the user picks.
+
+---
+
+## Shared rules for low and medium effort
+
+**Runner.** Use `praxis-answer`, found the same way as the other praxis tools:
+```bash
+_PA=$(ls ~/.claude/skills/praxis/bin/praxis-answer .claude/skills/praxis/bin/praxis-answer 2>/dev/null | head -1)
+[ -n "$_PA" ] || echo "praxis-answer not found: run praxis scripts/setup.sh"
+$_PA datasets       # registered datasets and their config keys
+$_PA concepts       # names `check` accepts, with aliases
+$_PA definitions    # the house definitions
+$_PA check --dataset <name> --concepts <a,b,...>
+$_PA run --dataset <name> --metric <id> --by <dims> --effort <level> --out <dir>
+```
+Metrics: `icu_los` (survivors), `hospital_mortality`, `icu_los_oe` (APACHE IVa
+observed/expected, eICU only). Dimensions: `age_band`, `sex`,
+`race_ethnicity`, `hospital`, `peer_group` (eICU). `--by a,b` gives one
+breakdown per dimension stacked in one table; add `--cross` for a crosstab.
+
+**Data boundary.** You see schemas, definitions, generated code and the
+runner's JSON, nothing else. Never print, `head()`, sample or `SELECT *`
+patient-level rows. By default the runner suppresses every cell under n=10
+and refuses to release one that slips through; report `<10` and `suppressed`
+exactly as given, and never back-calculate them.
+
+**Small-cell suppression is a flag.** `--min-cell N` sets the threshold
+(`--min-cell 11` for a k=11 rule); `--min-cell 0` turns it off for internal
+QI, where exact small counts are the point. A standing default can live in
+config as `min_cell`. Turn it off only when the user says the work is
+internal QI or asks for exact counts; never to make a table look fuller.
+List the level used under "Assumptions used" (the runner's `disclosure`
+block says which). The threshold only hides cells; it never changes a
+number. Output stays aggregate-only at every setting.
+
+**Where it runs.** Only registered datasets: the open demos on local DuckDB
+(`eicu_demo`, `mimic_iv_demo`) or BigQuery (`eicu_demo_bq`, and the
+credentialed `eicu_crd`, `mimic_iv`). Never run in a restricted enclave from
+these paths. Credentialed datasets need a Claude API account with zero data
+retention, recorded as `praxis-config set credentialed_data_zdr confirmed`;
+the runner refuses without it. Do not set that key yourself: the user
+confirms the account.
+
+**Time.** Never filter by calendar year. MIMIC-IV dates are shifted per
+patient; eICU-CRD covers 2014-2015 only.
+
+**Prior learnings, from every project.** Before L2/M1, run
+`praxis-learn search <family>` (`eicu` or `mimic`) and read the matches whose
+`valid_for` matches the dataset. Apply them as watch-outs, labelled
+"Prior learning applied: …"; flag a version mismatch as "Prior learning
+(verify): …". This is how one project's lesson reaches the next.
+
+**One notebook, every level.** `run --out` writes the standard notebook
+(`src/praxis/templates/answer_notebook.py`): spec, assumptions, answer,
+watch-outs, review, learnings, audit. A level fills what it runs and marks
+the rest *not run*; escalating fills the same file. The audit cell reruns the
+spec and asserts the table matches what was released.
+
+**Learnings at low and medium.** After the answer (never before: it does not
+count against the question budget), gather the runner's
+`candidate_learnings` plus any portable finding of your own from the silent
+review pass (true of the dataset or method, not of this question; would
+knowing it six months ago have saved time?). If there are any, ask once,
+AskUserQuestion multi-select, one option per learning with its content as the
+description. Save the accepted ones with `praxis-learn add '<json>'` from the
+repo root, never a `cd`'d subdirectory. Save nothing silently. None to
+propose: say nothing.
+
+**Exit codes.** `2` = refused (unknown dataset, missing location, ZDR, a metric
+the dataset cannot support): report the `detail` in plain words. `3` = over the
+time budget: rerun with `--max-hospitals N` and say what was narrowed. `4` = a
+bad flag or value, named in `detail`: fix it once. Anything else: stop and
+report it. No fix loops in front of the user.
+
+---
+
+## Low effort — demo mode
+
+Goal: a cold question reaches first numbers in under 10 minutes. Skip Steps
+0.5-5 up front; a compressed version runs after the answer.
+
+**L1. Intake (0-1 questions).** Turn the question into a spec, inferring:
+
+| The user says | Spec |
+|---------------|------|
+| length of stay, LOS | `--metric icu_los` |
+| mortality, deaths, survival to discharge | `--metric hospital_mortality` |
+| severity-adjusted, risk-adjusted, vs peers, benchmark | `--metric icu_los_oe --by peer_group` (or `hospital`) |
+| demographics | `--by age_band,sex,race_ethnicity` |
+| all hospitals, across sites, peers | an eICU dataset |
+| nothing about sites | `eicu_demo` if multi-site matters, else `mimic_iv_demo` |
+| our / my ICUs | public data is not theirs: answer for the sample, say so in line 1 of the answer |
+
+Use the open demo unless the user asks for full data and the ZDR key is set.
+Ask one clarifying question (AskUserQuestion, 2-4 options) only when the answer
+would otherwise be wrong: the unit of analysis or the outcome is genuinely
+ambiguous ("how are our ICUs doing?" — LOS, mortality, or both?). Otherwise
+proceed and record the choice under *Assumptions used*. Never ask a second
+question. If a dataset location is unset, the refusal says which key; ask the
+user for that path (this is the one question) instead of guessing one.
+
+**L2. Can this data answer it?** Run `check` with every concept the question
+needs. Concepts: `icu_los`, `hospital_mortality`, `demographics`,
+`hospital_comparison`, `severity_adjustment`, `icu_readmission`, `cost`,
+`charges`, `margin`, `payer`, `staffing` (metric and dimension ids work as
+aliases; `concepts` lists them). `unknown_concept` means a wrong word, not a
+missing capability: pick the nearest catalog name and check again. If any
+concept is `not_in_data`, that decides it, whatever the others say: stop
+and say so plainly, with the `detail` text: what is missing and what data would supply it. Do not approximate (no
+LOS-times-a-guessed-day-rate for cost). If one is `not_in_library`, say the
+data has it but there is no canonical metric yet, and offer medium effort,
+where one can be built and reviewed. Do not hand-write a metric in low.
+
+**L3. Run.** One `run` call with `--effort low --out <dir> --question
+"<the question>"` (default budget 60 s). It also writes the standard notebook
+to `<dir>/<dataset>_<metric>.ipynb`. Do not write SQL or Python in low effort. Load the chart PNG to look at
+it before describing it.
+
+**L4. Answer.** In this order, nothing else:
+
+1. **Answer**: three plain-language lines with the key numbers, n included.
+2. **Assumptions used**: one short line per `assumptions` entry, phrased so it
+   can be changed ("LOS among survivors; say 'include deaths' to change").
+3. **Table**: the `table` rows as markdown.
+4. **Chart**: the `chart` path.
+5. **Watch-outs / next refinements**: the runner's `watchouts`, then your own,
+   from a silent pass over Step 1.5 and Dimensions 2-4 and 6 for this question.
+   Only findings at confidence ≥ 5, one line each, most consequential first,
+   at most eight lines in all; drop runner lines that repeat yours.
+   Typical: severity adjustment missing, case mix, demo-size instability,
+   definition choices that are load-bearing. No scores, no verdict.
+6. **Notebook**: the `notebook` path, one line. Do not edit it at low effort.
+
+**L5. Close: ask about more effort.** After an L2 stop, end with what the
+data *can* answer instead. After an answer, ask once with AskUserQuestion,
+single-select, in the same call as the learnings question (see *Learnings at
+low and medium*), so the user answers one round:
+
+- **Stop here** (first option): the answer stands; the notebook is saved.
+- **Medium**: a reviewed, full-scope run; the review fills the same notebook.
+- **High**: the full research audit, with these assumptions pre-filled.
+
+Name in each option what it would add for *this* question (for example "adds
+severity adjustment and all 208 hospitals"). On escalation, the spec and the
+assumptions become medium's proposed defaults, or high's pre-filled Step 1.5
+definition inventory, and the same notebook is the one that gets filled in.
+Never ask again in the session once the user picks Stop.
+
+---
+
+## Medium effort — operations
+
+**M1. Intake (2-3 questions, one AskUserQuestion round).** Propose the spec
+and the assumptions from `definitions`, and ask the user to confirm or change
+them in the same round as up to two other questions (dataset, scope, output
+location). Severity adjustment is on by default where the data supports it:
+for an eICU LOS question run `icu_los_oe` alongside `icu_los`.
+
+**M2. Short review before the run.** `check` stands in for Step 0.5. Run Step
+1.5 only for concepts the library does not define. Score Dimensions 1-7 in one
+pass as a single table, not one at a time; surface findings at confidence ≥ 8
+with AskUserQuestion (at most two). One-line verdict.
+
+**M3. Run** at full scope (no `--max-hospitals` unless the budget forces it,
+and say so) with `--effort medium --budget 300 --out <dir> --question
+"<the question>"`. The notebook reruns the same spec through the same code,
+so its numbers match low and high exactly. Replace its *5. Review* cell with
+the M2 table and verdict (NotebookEdit).
+
+**M4. Output**: the L4 block, the review table and the notebook path. Then
+one AskUserQuestion call: Stop here / High (what the full audit would add),
+single-select, alongside the learnings question.
